@@ -282,8 +282,14 @@ details > summary::-webkit-details-marker {
  * Brilho do preço. A faixa branca é recortada pela própria letra
  * (background-clip: text) e tem borda dura: as paradas do gradiente são
  * coincidentes, sem transição, então o reflexo passa como uma lâmina e não
- * como um borrão. O movimento acontece no primeiro quinto do ciclo; o resto
+ * como um borrão. O movimento acontece na primeira metade do ciclo; o resto
  * é pausa com a faixa fora de cena.
+ *
+ * Ao passar de 5s para 3s, o que encurtou foi a **pausa**, não a passada: as
+ * porcentagens dos keyframes foram refeitas para a lâmina levar os mesmos
+ * ~1,1s de antes. Encurtar o ciclo sem mexer nelas deixaria o reflexo mais
+ * rápido, e é a velocidade da passada que faz ele ler como reflexo em metal
+ * em vez de piscada.
  */
 .price-shine {
   color: var(--color-sun);
@@ -306,16 +312,16 @@ details > summary::-webkit-details-marker {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: price-shine 5s ease-in-out infinite;
+    animation: price-shine 3s ease-in-out infinite;
   }
 }
 
 @keyframes price-shine {
   0%,
-  12% {
+  10% {
     background-position: 0 0;
   }
-  34%,
+  47%,
   100% {
     background-position: 100% 0;
   }

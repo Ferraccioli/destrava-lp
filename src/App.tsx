@@ -1,6 +1,6 @@
 import Header from './components/Header'
 import Hero from './components/Hero'
-import Marquee from './components/Marquee'
+import Apoio from './components/Apoio'
 import PurchaseBlock from './components/PurchaseBlock'
 import HowItWorks from './components/HowItWorks'
 import Vsl from './components/Vsl'
@@ -19,7 +19,7 @@ function App() {
       <Header />
       <main>
         <Hero />
-        <Marquee />
+        <Apoio />
         <PurchaseBlock />
         <HowItWorks />
         <Vsl />

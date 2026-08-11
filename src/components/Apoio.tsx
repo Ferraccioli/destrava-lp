@@ -25,9 +25,9 @@ import sebrae from '../assets/apoio-sebrae.webp'
  * pequenos, já que só a silhueta sobrevive.
  */
 const LOGOS = [
-  { src: faetec, alt: 'FAETEC', altura: 'h-5' },
-  { src: faperj, alt: 'FAPERJ', altura: 'h-6' },
-  { src: noiz, alt: 'ONG Noiz', altura: 'h-6' },
+  { src: faetec, alt: 'FAETEC', altura: 'h-5', w: 232, h: 48 },
+  { src: faperj, alt: 'FAPERJ', altura: 'h-6', w: 205, h: 64 },
+  { src: noiz, alt: 'ONG Noiz', altura: 'h-6', w: 165, h: 64 },
 ]
 
 /* Anda junto com o deslocamento do keyframe `tarja-apoio` em `index.css`, que é
@@ -75,13 +75,21 @@ function Conteudo({ clone = false }: { clone?: boolean }) {
         Com o apoio:
       </p>
 
-      {LOGOS.map(({ src, alt, altura }) => (
+      {/* Dimensão declarada e carregamento imediato, e os dois pelo mesmo
+          motivo: aqui a largura do bloco é a régua do laço. Com `lazy`, os
+          logos das cópias fora da tela não carregam, cada imagem mede zero, e o
+          deslocamento de -100%/6 passa a ser calculado sobre uma trilha menor
+          do que ela vai ser — a emenda quebra no instante em que as imagens
+          chegam. Medido em produção antes da correção: bloco de 536,6px contra
+          os 818,5px reais. Somados, os quatro arquivos dão 30KB. */}
+      {LOGOS.map(({ src, alt, altura, w, h }) => (
         <img
           key={alt}
           src={src}
           alt={clone ? '' : alt}
           className={`w-auto shrink-0 opacity-70 brightness-0 invert ${altura}`}
-          loading="lazy"
+          width={w}
+          height={h}
         />
       ))}
 
@@ -106,7 +114,8 @@ function Conteudo({ clone = false }: { clone?: boolean }) {
           src={sebrae}
           alt={clone ? '' : 'Sebrae Startups'}
           className="h-8 w-auto shrink-0 opacity-95 brightness-0 invert"
-          loading="lazy"
+          width={128}
+          height={88}
         />
       </div>
 

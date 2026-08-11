@@ -206,9 +206,21 @@ details > summary::-webkit-details-marker {
 .alert-badge[data-landed='true'] {
   animation: alert-badge-land 1150ms both;
 }
+/*
+ * Depois de assentar, a placa volta a tremer de tempos em tempos. Duas
+ * animações na mesma propriedade, e a ordem é o que faz funcionar: a última da
+ * lista vence enquanto está ativa, e o tremor só fica ativo depois do próprio
+ * atraso — até lá quem manda é o `both` da chegada, parada em zero. Por isso o
+ * quadro 0% do tremor também é zero: sem isso haveria um salto na troca.
+ *
+ * O ciclo é longo e a agitação ocupa só o fim dele. É o que separa lembrete de
+ * tique: sete segundos parada, um e pouco de tremor, e o olho volta.
+ */
 .alert-badge[data-landed='true'] img {
   transform-origin: 50% 12%;
-  animation: alert-plate-swing 1150ms both;
+  animation:
+    alert-plate-swing 1150ms both,
+    alert-plate-tremor 7s ease-in-out 2.6s infinite;
 }
 
 @keyframes alert-badge-land {
@@ -252,6 +264,76 @@ details > summary::-webkit-details-marker {
   }
   91% {
     transform: rotate(-0.7deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/*
+ * Tarja de apoiadores em laço lateral.
+ *
+ * O deslocamento é de **um bloco**, e a tarja tem seis: por isso -100% dividido
+ * por seis. O número vive também no `COPIAS` de `Apoio.tsx`, e os dois precisam
+ * andar juntos — deslocar mais ou menos que um bloco exato deixa a emenda
+ * visível a cada volta.
+ *
+ * O passo é de quarenta pixels por segundo — o bloco mede 818px e leva vinte
+ * segundos para sair —, e é lento de propósito: a tarja tem texto para ler, não
+ * só logo para reconhecer. Linear, porque qualquer aceleração denuncia o ponto
+ * de emenda.
+ *
+ * Quem pede menos movimento não recebe uma tarja parada e cortada: as cópias
+ * decorativas somem, a animação para e o campo passa a rolar na horizontal,
+ * para que o conteúdo continue alcançável em tela estreita.
+ */
+.tarja-apoio-campo {
+  overflow: hidden;
+}
+
+.tarja-apoio {
+  display: flex;
+  width: max-content;
+  animation: tarja-apoio 20s linear infinite;
+}
+
+@keyframes tarja-apoio {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% / 6));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarja-apoio {
+    animation: none;
+  }
+  .tarja-apoio [data-clone='true'] {
+    display: none;
+  }
+  .tarja-apoio-campo {
+    overflow-x: auto;
+  }
+}
+
+@keyframes alert-plate-tremor {
+  0%,
+  78% {
+    transform: rotate(0deg);
+  }
+  82% {
+    transform: rotate(4deg);
+  }
+  86% {
+    transform: rotate(-2.8deg);
+  }
+  90% {
+    transform: rotate(1.6deg);
+  }
+  94% {
+    transform: rotate(-0.8deg);
   }
   100% {
     transform: rotate(0deg);

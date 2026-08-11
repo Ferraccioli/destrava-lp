@@ -20,7 +20,8 @@ export default function PurchaseBlock() {
     <section id="comprar" className="scroll-mt-4 bg-mint-soft">
       <div className="mx-auto w-full max-w-6xl px-5 py-14 md:px-8 md:py-20">
         {/* Selo de oferta sobre a régua da seção. Campo escuro com a coroa em
-            amarelo é o mesmo par do selo "Não é um curso" no hero.
+            amarelo: é o único campo escuro que sobrou fora do rodapé e da tarja
+            de apoio, e por isso continua marcando o começo da oferta.
 
             A régua vai dos dois lados agora: com ele centrado e a régua só à
             direita, o selo ficaria pendurado numa linha que sai de lugar nenhum.
@@ -98,8 +99,10 @@ export default function PurchaseBlock() {
                 Não é mais uma mensalidade que você assume. É um presente pensado pro futuro dele.
               </p>
 
+              {/* ⚠️ Texto novo, escrito aqui. A frase anterior cobrava o leitor
+                  pelo que ele já gastou; esta aponta para a frente. */}
               <p className="mt-4 rounded-xl bg-sun-soft px-4 py-3 text-sm font-medium leading-relaxed text-ink">
-                Você já investiu mais que isso em coisa que ele não terminou.
+                Invista em algo que realmente vai fazer diferença na vida dele.
               </p>
 
               <a

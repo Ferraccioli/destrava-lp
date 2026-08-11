@@ -45,35 +45,54 @@ export default function Hero() {
               toda, e em 24ch o subtítulo parava em dois terços dela. */}
           <p className="mt-5 max-w-[36ch] font-display text-xl font-medium leading-snug text-balance text-ink md:text-2xl">
             Aposto que ninguém te deu um manual pra isso.{' '}
-            <span className="text-brand">A gente escreveu um pro seu filho.</span>
+            <span className="text-brand">A gente criou um pro seu filho.</span>
           </p>
 
           {/* Ilustração — até o lg entra aqui, entre a promessa e o selo */}
           <HeroArt className="order-1 mt-10 lg:hidden" />
 
-          {/* Selo de diferenciação: único campo preto da página, alerta à esquerda.
+          {/* Selo de diferenciação, alerta à esquerda. Já foi campo preto com o
+              título em 2rem, e era o segundo maior contraste do hero: puxava o
+              olho antes da headline e antes do CTA. Baixado a pedido para
+              amarelo pastel, texto escuro e tipo menor — deixa de ser um bloco
+              e passa a ser uma nota ao pé da promessa.
+
+              O `sun-soft` é o mesmo campo do fecho da seção de preço, então a
+              nota e a objeção falam com a mesma voz nas duas pontas da página.
+
               A margem curta até o lg é de propósito: a base da ilustração está
               dissolvida pelo `fade-bottom` e não precisa de respiro próprio. */}
           <div
             ref={seloRef}
             data-landed={seloLanded}
-            className="alert-badge order-2 mt-2 flex items-center gap-5 rounded-2xl bg-black px-6 py-5 lg:mt-9"
+            className="alert-badge order-2 mt-2 flex items-center gap-4 rounded-xl bg-sun-soft px-5 py-4 lg:mt-8"
           >
-            {/* A placa nasce sobre preto puro, então senta direto no campo */}
+            {/* O arquivo veio com fundo preto chapado, feito para o campo preto
+                que havia aqui, e sobre amarelo virava um quadrado preto. O
+                fundo foi recortado no próprio asset, e não com blend:
+                `multiply` mantinha o preto, e `screen` e `lighten` lavavam o
+                desenho. O contorno verde saiu na mesma passada, a pedido.
+
+                Serve em 392px de largura para sete vezes o tamanho de render:
+                a placa tem 48px de altura aqui, então mais que isso é peso sem
+                imagem. */}
             <img
               src={placaAlerta}
               alt=""
               aria-hidden="true"
-              className="h-16 w-auto shrink-0 md:h-20"
-              width={784}
-              height={639}
+              className="h-12 w-auto shrink-0 md:h-14"
+              width={392}
+              height={320}
               loading="lazy"
             />
             <div>
-              <p className="font-display text-[1.75rem] font-semibold leading-none tracking-display text-sun md:text-[2rem]">
+              {/* Preto a pedido. É o único preto chapado que sobrou na página,
+                  e aqui ele funciona porque o campo é claro: sobre `sun-soft`
+                  mede 19,2:1, contra 7,1:1 do forest que estava. */}
+              <p className="font-display text-[1.25rem] font-semibold leading-none tracking-display text-black md:text-[1.375rem]">
                 Não é um curso.
               </p>
-              <p className="mt-2 text-[0.95rem] font-medium leading-snug text-white/85">
+              <p className="mt-1.5 text-[0.875rem] font-medium leading-snug text-ink-soft">
                 Assistir conteúdo não é o mesmo que se preparar.
               </p>
             </div>
@@ -159,11 +178,21 @@ function HeroArt({ className = '' }: { className?: string }) {
       {/* Sem `mix-blend-multiply` e sem `fade-bottom`, ao contrário da
           ilustração que saiu daqui: o recorte tem alfa de verdade, então não
           precisa do truque de blend para dissolver fundo branco, e uma máscara
-          na base cortaria o aparelho no meio em vez de dissolver uma cena. */}
+          na base cortaria o aparelho no meio em vez de dissolver uma cena.
+
+          O aparelho cresce por `scale`, e não por largura, e é isso que deixa o
+          resto da composição parado: `transform` não entra no layout, então a
+          caixa continua do mesmo tamanho e os ícones — posicionados em
+          porcentagem dela — e o splash ficam exatamente onde estavam.
+
+          O fator saiu de medida, não de gosto. A silhueta do aparelho ocupa de
+          27,8% a 71,1% da caixa, e o ícone mais próximo, Emprego, termina em
+          23,1%. Crescendo pelo centro, 1,14 leva a borda esquerda a 24,7% e
+          mantém folga; a partir de 1,17 o aparelho encosta no ícone. */}
       <img
         src={celularSimulacao}
         alt="Um celular inclinado mostrando a Simulação do Destrava: uma entrevista de emprego em andamento, com a entrevistadora no topo e a conversa embaixo"
-        className="relative z-[1] w-full"
+        className="relative z-[1] w-full scale-[1.14]"
         width={1024}
         height={1024}
         fetchPriority="high"

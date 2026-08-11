@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
 import { Palco, Tela } from '../telas/aparelho'
 import { useRelogio } from '../telas/relogio'
@@ -14,6 +14,12 @@ type Tab = {
   id: string
   n: string
   label: string
+  /*
+   * ⚠️ Copy nova, escrita aqui e não vinda do documento fechado da campanha.
+   * O título da seção era um só ("É isso que ele passa a ter em mãos") e passou
+   * a ser um por passo. Rever com quem responde pela copy.
+   */
+  titulo: string
   text: string
   tela: () => ReactNode
   duracao: number
@@ -27,6 +33,7 @@ const TABS: Tab[] = [
     id: 'simulacao',
     n: '1',
     label: 'A Simulação',
+    titulo: 'Ele treina a entrevista antes da entrevista.',
     text: 'Ele entra numa entrevista de verdade: a pergunta aparece, ele responde, e o app devolve onde ele travou.',
     tela: Simulacao,
     duracao: DURACAO_SIMULACAO,
@@ -37,6 +44,7 @@ const TABS: Tab[] = [
     id: 'trilhas',
     n: '2',
     label: 'As trilhas',
+    titulo: 'O que ninguém sentou pra ensinar pra ele.',
     text: 'Carreira, Finanças, Cidadania e Bem-estar. Uma decisão de cada vez, no ritmo dele.',
     tela: Trilhas,
     duracao: DURACAO_TRILHAS,
@@ -48,6 +56,7 @@ const TABS: Tab[] = [
     id: 'sem-limite',
     n: '3',
     label: 'Sem limite',
+    titulo: 'Aqui ele pode errar quantas vezes precisar.',
     text: 'Ele refaz quantas vezes precisar, até a resposta sair boa.',
     tela: Relatorio,
     duracao: DURACAO_RELATORIO,
@@ -91,28 +100,54 @@ function TrilhasOrbitando() {
 }
 
 /**
+ * Seta de navegação do carrossel, presa à lateral da cena. Dá a volta nas duas
+ * pontas, então nunca fica desabilitada: com três passos, o caminho mais curto
+ * do terceiro para o primeiro é adiante.
+ *
+ * O disco tem 44px porque é o mínimo de alvo de toque; e o `aria-hidden` não
+ * entra aqui, ao contrário das ilustrações decorativas — a seta é controle, e
+ * quem navega por leitor de tela precisa alcançá-la.
+ */
+function Seta({ sentido, onClick }: { sentido: 'anterior' | 'proximo'; onClick: () => void }) {
+  const anterior = sentido === 'anterior'
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={anterior ? 'Passo anterior' : 'Próximo passo'}
+      className={`absolute top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-mint text-forest transition-[background-color,color,transform] duration-200 hover:bg-brand hover:text-white active:scale-95 ${
+        anterior ? 'left-0' : 'right-0'
+      }`}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        className="h-6 w-6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d={anterior ? 'M15 5l-7 7 7 7' : 'M9 5l7 7-7 7'} />
+      </svg>
+    </button>
+  )
+}
+
+/**
  * Largura da figura do passo, igual nos três. A figura é maior que o aparelho:
  * o mock ocupa só o miolo e as trilhas ficam nas laterais, tudo dentro dela.
  */
-function larguraDaFigura(reduced: boolean) {
-  if (reduced) return 'w-full max-w-[22rem] md:max-w-[24rem] lg:max-w-[29rem]'
-  /*
-   * Até o lg a composição fica empilhada, e aí o aparelho divide a altura da
-   * cena presa com o texto. Dois cuidados vêm daí:
-   *
-   * No mobile a largura é dada em `svh` porque o que limita o aparelho é a
-   * altura da tela, não a largura: tamanho fixo obriga a escolher pelo pior
-   * caso (701px de altura, o mais baixo em que ele ainda aparece) e desperdiça
-   * a sobra num aparelho alto. O clamp segura os extremos.
-   *
-   * A tela é 390 × 800, então cada rem de largura custa mais que o dobro em
-   * altura: os degraus do md e do mobile compensam isso para a cena presa não
-   * estourar — os limites foram medidos em 768 × 800 e 375 × 701, os dois
-   * piores casos.
-   */
-  // `max-w-full` é o teto de largura: sem ele, tela alta e estreita transborda.
-  return 'scrolly-phone w-[clamp(14rem,34svh,20rem)] max-w-full md:w-[18rem] lg:w-[26rem]'
-}
+/*
+ * Uma medida só, em `rem`. Enquanto a seção era um scrollytelling, a largura
+ * vinha de um `clamp` em `svh`: o aparelho dividia a altura da cena presa com o
+ * texto, então o que o limitava era a altura da janela e não a largura, e havia
+ * até uma regra na folha que o escondia em tela baixa. Sem a cena presa não há
+ * altura para disputar, e a figura volta a se medir pela coluna, como o resto
+ * da página.
+ */
+const LARGURA_DA_FIGURA = 'w-full max-w-[22rem] md:max-w-[24rem] lg:max-w-none'
 
 /**
  * O aparelho e a tela que roda dentro dele.
@@ -192,120 +227,72 @@ function Aparelho({
 
 export default function HowItWorks() {
   const [active, setActive] = useState(0)
-  // Com preferência por menos movimento, a seção volta a ser abas estáticas, sem cena presa.
+  /* Com preferência por menos movimento o deslize some, e a troca de passo
+     passa a ser instantânea. A seção continua funcionando igual. */
   const [reduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-  const scrollyRef = useRef<HTMLDivElement>(null)
-  const stickyRef = useRef<HTMLDivElement>(null)
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
+
   /*
-   * Destino de uma rolagem disparada por clique. Enquanto ela estiver em curso,
-   * o ouvinte de rolagem não manda no passo ativo: a rolagem é suave e atravessa
-   * as faixas do meio, então clicar no passo 3 vindo do 1 acendia o 2 no
-   * caminho — era isso que piscava.
+   * O passo é dado só por quem clica: tag, seta ou teclado. A seção já foi um
+   * scrollytelling, com um wrapper de 400svh e a cena presa num sticky, e a
+   * rolagem é que mandava no passo — o que arrastava junto uma trava de clique
+   * (a rolagem suave atravessava as faixas do meio e acendia o passo 2 no
+   * caminho do 1 para o 3) e um regime de layout separado para tela baixa.
+   * Nada disso sobrou: a seção é uma seção, e o carrossel é um carrossel.
    */
-  const destinoDoClique = useRef<number | null>(null)
-  const travaDoClique = useRef<number | undefined>(undefined)
-
-  useEffect(() => () => window.clearTimeout(travaDoClique.current), [])
-
-  /* A rolagem dirige o passo ativo: 100svh de rolagem por passo enquanto a cena está presa. */
-  useEffect(() => {
-    if (reduced) return
-    const scrolly = scrollyRef.current
-    const sticky = stickyRef.current
-    if (!scrolly || !sticky) return
-    let raf = 0
-    const update = () => {
-      raf = 0
-      if (destinoDoClique.current !== null) {
-        if (Math.abs(window.scrollY - destinoDoClique.current) < 2) destinoDoClique.current = null
-        return
-      }
-      const scrollable = scrolly.offsetHeight - sticky.offsetHeight
-      if (scrollable <= 0) return
-      const progress = Math.min(Math.max(-scrolly.getBoundingClientRect().top / scrollable, 0), 0.999)
-      setActive(Math.floor(progress * TABS.length))
-    }
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update)
-    }
-    update()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-      if (raf) cancelAnimationFrame(raf)
-    }
-  }, [reduced])
-
   function goTo(index: number, moveFocus = false) {
-    setActive(index)
-    if (!reduced) {
-      const scrolly = scrollyRef.current
-      const sticky = stickyRef.current
-      if (scrolly && sticky) {
-        const top = scrolly.getBoundingClientRect().top + window.scrollY
-        const scrollable = scrolly.offsetHeight - sticky.offsetHeight
-        const destino = Math.round(top + ((index + 0.5) / TABS.length) * scrollable)
-        destinoDoClique.current = destino
-        /* Rede: se a rolagem não chegar ao alvo exato (fim de página, gesto do
-           visitante no meio), a trava cai sozinha e o ouvinte volta a mandar. */
-        window.clearTimeout(travaDoClique.current)
-        travaDoClique.current = window.setTimeout(() => {
-          destinoDoClique.current = null
-        }, 900)
-        window.scrollTo({ top: destino, behavior: 'smooth' })
-      }
-    }
-    if (moveFocus) tabRefs.current[index]?.focus()
+    /* Dá a volta nos dois sentidos. O `+ TABS.length` antes do módulo é o que
+       faz o passo -1 virar o último em vez de NaN negativo. */
+    const alvo = (index + TABS.length) % TABS.length
+    setActive(alvo)
+    if (moveFocus) tabRefs.current[alvo]?.focus()
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     const delta = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
     if (!delta) return
     event.preventDefault()
-    goTo((active + delta + TABS.length) % TABS.length, true)
+    goTo(active + delta, true)
   }
 
   return (
-    <section id="como-funciona">
-      {/* Scrollytelling: o wrapper alto dá 100svh de rolagem por passo; a cena fica presa no sticky */}
-      <div
-        ref={scrollyRef}
-        className={reduced ? undefined : 'relative'}
-        style={reduced ? undefined : { height: `${(TABS.length + 1) * 100}svh` }}
-      >
-        <div
-          ref={stickyRef}
-          className={
-            reduced
-              ? 'mx-auto w-full max-w-6xl px-5 pt-16 md:px-8 md:pt-24'
-              : 'sticky top-0 flex h-svh flex-col justify-center overflow-hidden px-5 md:px-8'
-          }
-        >
-          {/*
-            Duas colunas do topo: título, abas e texto do passo empilhados à
-            esquerda, aparelho à direita centrado no conjunto. O texto vive no
-            fluxo da coluna, logo abaixo das abas — antes ele dividia a célula
-            com o aparelho e herdava a altura dele, o que abria um vão morto
-            entre as abas e a frase.
-          */}
-          <div
-            className={`grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-16 ${
-              reduced ? '' : 'mx-auto w-full max-w-6xl'
-            }`}
-          >
-            <div>
-              <h2 className="max-w-[19ch] font-display text-[2rem] font-semibold leading-[1.03] tracking-display text-forest md:text-[2.75rem]">
-                É isso que ele passa a ter em mãos.
-              </h2>
+    <section id="como-funciona" className="px-5 py-16 md:px-8 md:py-24">
+      {/* `relative` é o que dá referência às setas, que são absolutas contra a
+          cena inteira e não contra a coluna de texto. O `overflow-hidden`
+          segura o passo que entra deslizando pela borda. */}
+      <div className="relative mx-auto w-full max-w-6xl overflow-hidden">
+        {/* A altura do carrossel é declarada, e é `min-h`: em 75svh cheios o
+            conjunto cabe folgado, mas numa janela baixa e larga o aparelho tem
+            altura própria e um teto rígido o cortaria. Assim o piso vale
+            sempre e a caixa cede quando o conteúdo precisa. */}
+        {/* No mobile o conteúdo vai até a borda e as setas passam por cima:
+            reservar 44px de cada lado ali custava um terço da largura do
+            aparelho. Elas caem sobre a margem transparente da figura, que é
+            larga o bastante (19% de cada lado) para o aparelho não ser
+            encoberto. Do md em diante sobra espaço, e aí elas ficam fora. */}
+        <div className="flex min-h-[75svh] flex-col justify-center md:px-16">
+          <Seta sentido="anterior" onClick={() => goTo(active - 1)} />
+          <Seta sentido="proximo" onClick={() => goTo(active + 1)} />
 
+          {/*
+            Duas colunas: tags, título e texto do passo empilhados à esquerda,
+            aparelho à direita centrado no conjunto. As tags ficam **acima** do
+            título porque o título agora é do passo, não da seção: elas nomeiam
+            qual dos três está em cena, e um rótulo que muda embaixo do que ele
+            rotula lê ao contrário.
+
+            A coluna do aparelho tem largura declarada, e não `auto`: com track
+            automática e a figura em `w-full`, a largura fica circular — a track
+            pergunta ao conteúdo, o conteúdo responde "o que couber na track" —
+            e o resultado é uma coluna de zero.
+          */}
+          <div className="grid gap-8 lg:grid-cols-[1fr_28rem] lg:items-center lg:gap-16">
+            <div>
               <div
                 role="tablist"
                 aria-label="Como funciona, em três passos"
                 onKeyDown={onKeyDown}
-                className="mt-7 flex flex-wrap gap-2.5"
+                className="flex flex-wrap gap-2.5"
               >
                 {TABS.map((tab, i) => (
                   <button
@@ -338,28 +325,39 @@ export default function HowItWorks() {
                 ))}
               </div>
 
-              {/* Os textos dividem a mesma célula e se alternam por opacidade */}
+              {/*
+                Título e texto do passo dividem a mesma célula e deslizam.
+                O deslocamento sai de `i - active`, não de um estado de direção:
+                quem está antes do passo em cena espera à esquerda, quem está
+                depois espera à direita. Assim o sentido do deslize sai certo
+                sozinho, inclusive quando o visitante pula do 1 para o 3, e não
+                há histórico para guardar nem para dessincronizar.
+              */}
               <div className="mt-7 grid md:mt-8">
                 {TABS.map((tab, i) => (
-                  <p
+                  <div
                     key={tab.id}
                     role="tabpanel"
                     id={`painel-${tab.id}`}
                     aria-labelledby={`tab-${tab.id}`}
                     aria-hidden={active !== i}
                     hidden={reduced && active !== i}
-                    className={`col-start-1 row-start-1 max-w-[34ch] font-display text-2xl font-medium leading-[1.3] text-ink md:text-[2.1rem] ${
+                    style={reduced ? undefined : { transform: `translateX(${(i - active) * 2.5}rem)` }}
+                    className={`col-start-1 row-start-1 ${
                       reduced
                         ? ''
                         : `transition-[opacity,transform] duration-500 ease-out ${
-                            active === i
-                              ? 'translate-y-0 opacity-100'
-                              : 'pointer-events-none translate-y-3 opacity-0'
+                            active === i ? 'opacity-100' : 'pointer-events-none opacity-0'
                           }`
                     }`}
                   >
-                    {tab.text}
-                  </p>
+                    <h2 className="max-w-[19ch] font-display text-[2rem] font-semibold leading-[1.03] tracking-display text-forest md:text-[2.75rem]">
+                      {tab.titulo}
+                    </h2>
+                    <p className="mt-4 max-w-[34ch] font-display text-xl font-medium leading-[1.35] text-ink md:mt-5 md:text-[1.6rem]">
+                      {tab.text}
+                    </p>
+                  </div>
                 ))}
               </div>
             </div>
@@ -373,7 +371,7 @@ export default function HowItWorks() {
             {/* Só a figura visível é exposta ao leitor de tela: sem isso, as
                 três legendas seriam lidas em sequência. O miolo de cada uma
                 fica escondido de qualquer jeito, dentro do próprio Aparelho. */}
-            <div className="grid w-full min-w-0 justify-items-center lg:w-auto">
+            <div className="grid w-full min-w-0 justify-items-center">
               {TABS.map((tab, i) => (
                 <div
                   key={tab.id}
@@ -383,10 +381,14 @@ export default function HowItWorks() {
                      mínimo `auto` ele esticava até a largura pedida pela
                      figura — que então media o próprio `max-w-full` contra
                      ele, e nunca contra a coluna. */
+                  /* Desliza mais que o texto: o aparelho é o objeto maior da
+                     cena, e percurso igual nos dois faria o conjunto parecer
+                     uma peça só empurrada de lado. */
+                  style={reduced ? undefined : { transform: `translateX(${(i - active) * 4}rem)` }}
                   className={`col-start-1 row-start-1 w-full min-w-0 ${
                     reduced
                       ? ''
-                      : `transition-opacity duration-500 ease-out ${
+                      : `transition-[opacity,transform] duration-500 ease-out ${
                           active === i ? 'opacity-100' : 'pointer-events-none opacity-0'
                         }`
                   }`}
@@ -399,7 +401,7 @@ export default function HowItWorks() {
                     descricaoDaTela={tab.descricaoDaTela}
                     ativo={active === i}
                     reduced={reduced}
-                    className={larguraDaFigura(reduced)}
+                    className={LARGURA_DA_FIGURA}
                   />
                 </div>
               ))}
@@ -408,7 +410,7 @@ export default function HowItWorks() {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-6xl px-5 pb-16 pt-10 md:px-8 md:pb-24">
+      <div className="mx-auto w-full max-w-6xl pt-14 md:pt-20">
         <p className="border-t-2 border-mint pt-8 text-center font-display text-2xl font-medium tracking-display text-forest md:text-3xl">
           O Destrava construiu o caminho que faltava.
         </p>

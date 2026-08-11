@@ -140,16 +140,6 @@
 }
 
 /*
- * Scrollytelling do "Como funciona": em celulares de tela baixa o mockup
- * sai de cena para o texto do passo caber inteiro na cena presa.
- */
-@media (max-width: 767px) and (max-height: 700px) {
-  .scrolly-phone {
-    display: none;
-  }
-}
-
-/*
  * Grifo de marca-texto, pintado da esquerda para a direita quando a citação
  * entra em cena. O amarelo passa por trás e o texto continua escuro: pintar a
  * letra de amarelo sobre branco reprovaria de longe no contraste. A faixa

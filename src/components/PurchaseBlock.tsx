@@ -1,6 +1,17 @@
-import LeadForm from './LeadForm'
 import { useInView } from '../hooks/useInView'
 import presenteFuturo from '../assets/presente-futuro.webp'
+
+/*
+ * ⚠️ DESTINO PENDENTE. O formulário de captura saiu daqui a pedido, e no lugar
+ * dele ficou um botão que leva direto ao checkout — só que checkout não existe
+ * ainda, e não há URL dele em lugar nenhum do projeto. Enquanto isto for `#`, o
+ * CTA principal da seção de compra não leva a lugar nenhum.
+ *
+ * Trocar por um link real ANTES de tratar a página como no ar. Todos os outros
+ * CTAs (topo, hero, fechamento) apontam para `#comprar`, que é esta seção, e
+ * terminam neste botão: é o único ponto de saída da página.
+ */
+const URL_CHECKOUT = '#'
 
 export default function PurchaseBlock() {
   const { ref, inView } = useInView<HTMLDivElement>()
@@ -9,8 +20,14 @@ export default function PurchaseBlock() {
     <section id="comprar" className="scroll-mt-4 bg-mint-soft">
       <div className="mx-auto w-full max-w-6xl px-5 py-14 md:px-8 md:py-20">
         {/* Selo de oferta sobre a régua da seção. Campo escuro com a coroa em
-            amarelo é o mesmo par do selo "Não é um curso" no hero. */}
+            amarelo é o mesmo par do selo "Não é um curso" no hero.
+
+            A régua vai dos dois lados agora: com ele centrado e a régua só à
+            direita, o selo ficaria pendurado numa linha que sai de lugar nenhum.
+            Duas metades iguais é o que faz a régua ler como régua cortada pelo
+            selo, e não como um traço solto. */}
         <div className="flex items-center gap-4">
+          <span className="h-0.5 flex-1 bg-mint" aria-hidden="true" />
           <p className="inline-flex shrink-0 items-center gap-2 rounded-full bg-forest-deep py-2 pl-3 pr-4 font-display text-sm font-semibold text-white">
             <Coroa />
             Oferta por tempo limitado
@@ -18,22 +35,39 @@ export default function PurchaseBlock() {
           <span className="h-0.5 flex-1 bg-mint" aria-hidden="true" />
         </div>
 
-        {/*
-          O preço vive no card, não aqui: é lá que ele tem o riscado, o brilho e
-          as condições. O título anuncia o que é, o card diz quanto custa.
-        */}
-        <h2 className="mt-6 max-w-[16ch] font-display text-[2.25rem] font-semibold leading-[1.03] tracking-display text-forest md:text-[3.25rem]">
+        {/* Sem teto de medida: o `max-w-[16ch]` daqui era o que partia o título
+            em duas linhas. Solto, ele cabe inteiro numa linha no desktop, e no
+            celular quebra por largura de tela, como qualquer texto. */}
+        <h2 className="mt-6 text-center font-display text-[2.25rem] font-semibold leading-[1.03] tracking-display text-forest md:text-[3.25rem]">
           Três meses de acesso completo.
         </h2>
 
         {/*
-          Preço e formulário são um card só: quem decidiu vê o valor e o campo
-          de e-mail na mesma superfície, sem atravessar o card escuro da objeção,
-          que fica embaixo. A divisão entre os dois é uma régua — horizontal no
-          celular, vertical no md — e não uma segunda moldura.
+          Sem card branco. A moldura existia para juntar preço e formulário numa
+          superfície só; sem formulário ela virava uma caixa em volta de uma
+          coluna de texto, e a seção já tem fundo próprio para separá-la das
+          vizinhas. O que era conteúdo do card passa a ser conteúdo da seção.
+
+          Duas colunas: a ilustração do presente sozinha à esquerda, em tamanho
+          de ilustração e não de selo, e todo o resto à direita. A imagem é o
+          argumento da seção — "presente, não mensalidade" — então ela para de
+          ser um ícone ao lado de uma frase e passa a carregar a coluna.
         */}
         <div className="mt-10 space-y-6">
-          <div className="grid gap-8 rounded-3xl border-2 border-mint bg-white p-6 md:grid-cols-[1.05fr_0.95fr] md:gap-10 md:p-8">
+          <div className="grid items-center gap-8 md:grid-cols-[0.85fr_1.15fr] md:gap-12 lg:gap-16">
+            {/* `mix-blend-multiply` sem `isolate` desta vez: o fundo branco do
+                asset se dissolve direto no mint da seção, e não há mais campo
+                escuro por perto para o blend pegar por engano. */}
+            <img
+              src={presenteFuturo}
+              alt=""
+              aria-hidden="true"
+              className="mx-auto w-full max-w-[18rem] mix-blend-multiply md:max-w-none"
+              width={1024}
+              height={1024}
+              loading="lazy"
+            />
+
             <div ref={ref}>
               <p className="text-lg font-medium text-ink-faint">
                 <span className="price-strike" data-struck={inView}>
@@ -50,49 +84,32 @@ export default function PurchaseBlock() {
                 <span className="whitespace-nowrap">sem renovação automática</span>
               </p>
 
-              {/*
-                Medalhão à esquerda e as duas falas empilhadas à direita, em vez
-                da nota amarela cruzando a largura inteira por baixo. Como o
-                medalhão passa a responder pelas duas linhas, ele cresce sem
-                deixar buraco ao lado.
+              <p className="mt-6 max-w-[38ch] border-t-2 border-mint pt-6 text-[1.05rem] font-semibold leading-snug text-ink">
+                Não é mais uma mensalidade que você assume. É um presente pensado pro futuro dele.
+              </p>
 
-                Tudo isso só vale do lg para cima, e a razão é medida: no md a
-                coluna esquerda do card tem 305px, então o medalhão maior deixa
-                189px para a frase e ela quebra em cinco linhas. Abaixo do lg
-                fica o arranjo antigo — medalhão de 64px ao lado da frase e a
-                nota cruzando a largura por baixo.
-              */}
-              <div className="mt-6 grid grid-cols-[auto_1fr] items-start gap-x-4 gap-y-4 border-t-2 border-mint pt-6 lg:gap-x-5">
-                {/* No lg ele para de ser um selo ao lado da primeira linha e
-                    passa a ser o painel da coluna: `h-full` sobre a área das
-                    duas linhas, então topo e base fecham com os textos sozinhos,
-                    sem valor escolhido a dedo. Tem que ser altura esticada e não
-                    um quadrado maior — a pilha de texto muda de altura em
-                    degraus conforme quebra (132px, 155px), e quadrado nenhum
-                    acompanha degrau. */}
-                <Medalhao
-                  src={presenteFuturo}
-                  className="h-16 w-16 self-start lg:row-span-2 lg:h-full lg:w-32 lg:self-stretch"
-                />
-                <p className="text-[1.05rem] font-semibold leading-snug text-ink">
-                  Não é mais uma mensalidade que você assume. É um presente pensado pro futuro dele.
-                </p>
+              <p className="mt-4 max-w-[38ch] rounded-xl bg-sun-soft px-4 py-3 text-sm font-medium leading-relaxed text-ink">
+                Você já investiu mais que isso em coisa que ele não terminou.
+              </p>
 
-                {/* raio menor que o do card que a contém, para não competir com ele */}
-                <p className="col-span-2 rounded-xl bg-sun-soft px-4 py-3 text-sm font-medium leading-relaxed text-ink lg:col-span-1 lg:col-start-2">
-                  Você já investiu mais que isso em coisa que ele não terminou.
-                </p>
-              </div>
-            </div>
-
-            {/* A régua troca de eixo por breakpoint em vez de virar moldura */}
-            <div className="border-t-2 border-mint pt-8 md:border-l-2 md:border-t-0 md:pl-10 md:pt-0">
-              <h3 className="font-display text-2xl font-semibold tracking-display text-forest">
-                Garanta o acesso do seu filho
-              </h3>
-              <div className="mt-6">
-                <LeadForm />
-              </div>
+              <a
+                href={URL_CHECKOUT}
+                className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-brand px-10 py-4 font-display text-lg font-semibold text-white transition-[background-color,transform] duration-200 ease-out hover:bg-brand-dark active:scale-[0.99]"
+              >
+                Quero o Destrava
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h13M13 6l6 6-6 6" />
+                </svg>
+              </a>
             </div>
           </div>
 
@@ -157,43 +174,3 @@ function Coroa() {
   )
 }
 
-/**
- * Ilustração sobre campo mint. O `isolate` prende o mix-blend-multiply ao fundo
- * do próprio medalhão: sem ele, o blend pega a superfície escura atrás e a
- * ilustração fecha em preto.
- *
- * Muda de forma no lg junto com o arranjo do bloco: círculo pequeno ao lado da
- * primeira linha, painel arredondado quando ocupa a coluna inteira. O zoom de
- * 124% acompanha essa troca porque existe por causa do círculo — canto de
- * círculo come a arte, então a imagem entra maior para não deixar vazio nas
- * bordas. No painel não há canto comendo nada, e manter o zoom só cortaria as
- * mãos do desenho.
- *
- * Tem um único ponto de uso, e é por isso que a decisão de forma mora aqui
- * dentro em vez de virar prop.
- */
-function Medalhao({
-  src,
-  alt = '',
-  className = '',
-}: {
-  src: string
-  alt?: string
-  className?: string
-}) {
-  return (
-    <span
-      className={`isolate flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-mint lg:rounded-3xl ${className}`}
-    >
-      <img
-        src={src}
-        alt={alt}
-        aria-hidden={alt ? undefined : true}
-        className="h-[124%] w-[124%] max-w-none object-contain mix-blend-multiply lg:h-full lg:w-full"
-        width={1024}
-        height={1024}
-        loading="lazy"
-      />
-    </span>
-  )
-}

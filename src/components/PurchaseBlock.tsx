@@ -54,21 +54,31 @@ export default function PurchaseBlock() {
           ser um ícone ao lado de uma frase e passa a carregar a coluna.
         */}
         <div className="mt-10 space-y-6">
-          <div className="grid items-center gap-8 md:grid-cols-[0.85fr_1.15fr] md:gap-12 lg:gap-16">
+          {/*
+            As duas colunas são medidas pelo conteúdo (`auto`) e o conjunto é
+            centrado com `justify-center`, em vez de frações que esticam até
+            preencher o container. A diferença aparece porque o texto não chega
+            à borda: com colunas em fração, a sobra vira um buraco à direita e o
+            bloco lê como encostado à esquerda, mesmo com o container centrado.
+          */}
+          <div className="grid items-center justify-center gap-8 md:grid-cols-[auto_auto] md:gap-12 lg:gap-16">
             {/* `mix-blend-multiply` sem `isolate` desta vez: o fundo branco do
                 asset se dissolve direto no mint da seção, e não há mais campo
-                escuro por perto para o blend pegar por engano. */}
+                escuro por perto para o blend pegar por engano.
+
+                Largura declarada do md em diante: com a coluna medindo o
+                conteúdo, uma imagem em `w-full` não teria contra o que medir. */}
             <img
               src={presenteFuturo}
               alt=""
               aria-hidden="true"
-              className="mx-auto w-full max-w-[18rem] mix-blend-multiply md:max-w-none"
+              className="mx-auto w-full max-w-[18rem] mix-blend-multiply md:w-[20rem] md:max-w-none lg:w-[24rem]"
               width={1024}
               height={1024}
               loading="lazy"
             />
 
-            <div ref={ref}>
+            <div ref={ref} className="md:max-w-[30rem]">
               <p className="text-lg font-medium text-ink-faint">
                 <span className="price-strike" data-struck={inView}>
                   R$ 67,90
@@ -84,11 +94,11 @@ export default function PurchaseBlock() {
                 <span className="whitespace-nowrap">sem renovação automática</span>
               </p>
 
-              <p className="mt-6 max-w-[38ch] border-t-2 border-mint pt-6 text-[1.05rem] font-semibold leading-snug text-ink">
+              <p className="mt-6 border-t-2 border-mint pt-6 text-[1.05rem] font-semibold leading-snug text-ink">
                 Não é mais uma mensalidade que você assume. É um presente pensado pro futuro dele.
               </p>
 
-              <p className="mt-4 max-w-[38ch] rounded-xl bg-sun-soft px-4 py-3 text-sm font-medium leading-relaxed text-ink">
+              <p className="mt-4 rounded-xl bg-sun-soft px-4 py-3 text-sm font-medium leading-relaxed text-ink">
                 Você já investiu mais que isso em coisa que ele não terminou.
               </p>
 
@@ -113,37 +123,38 @@ export default function PurchaseBlock() {
             </div>
           </div>
 
-          {/* Objeção: o peso máximo da página, em campo preto chapado.
+          {/* Objeção. Já foi campo preto chapado com o título em 3,5rem, e era o
+              maior contraste da página inteira — o olho ia nele antes de ir no
+              preço, que é o que a seção existe para vender. Baixado a pedido:
+              campo mint, texto escuro e título no tamanho dos outros títulos de
+              apoio. A seção continua respondendo a objeção; deixa de disputar.
 
-              Já teve a cena do filho no sofá de fundo, com véu por cima. Saiu a
-              pedido dele: o card é bem mais largo que alto, e nessa faixa só
-              cabiam 31,5% da altura da ilustração — qualquer enquadramento
-              cortava alguma coisa, e o véu que o texto exigia já deixava a cena
-              quase invisível de qualquer forma.
+              O amarelo do fecho saiu junto, e não por gosto: `sun` sobre mint dá
+              cerca de 1,6:1 e seria ilegível. O destaque virou peso e cor de
+              marca, que sobre este campo passa folgado.
 
-              Sem a imagem, uma coluna só de texto deixava 60% da largura vazia.
-              Pergunta e resposta viraram duas colunas separadas por régua, o
-              mesmo arranjo do card de preço acima. A largura que sobrou foi
-              toda pro título, que aqui é o pico emocional da página.
+              Sem `on-dark`: aquela classe existe para virar o anel de foco para
+              amarelo sobre superfície escura, e aqui a superfície é clara.
 
-              A divisão só entra no lg, e não no md: a partir de duas colunas o
-              card se estreita junto com a tela, e no md a resposta caía para
-              230px, 26 caracteres por linha. Empilhado ela fica com 62. */}
-          <div className="on-dark grid gap-6 rounded-3xl bg-black p-6 md:p-9 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-10">
-            <p className="font-display text-[2.25rem] font-semibold leading-[1.02] tracking-display text-white md:text-[2.75rem] lg:text-[3.5rem]">
+              A divisão em duas colunas só entra no lg, e não no md: a partir de
+              duas colunas o card se estreita junto com a tela, e no md a
+              resposta caía para 230px, 26 caracteres por linha. Empilhada ela
+              fica com 62. */}
+          <div className="grid gap-6 rounded-3xl bg-mint p-6 md:p-9 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-10">
+            <p className="font-display text-[1.75rem] font-semibold leading-[1.05] tracking-display text-forest md:text-[2.25rem]">
               “E se ele não usar?”
             </p>
 
             {/* A medida se fecha pela coluna no lg+; o teto em ch só governa o
                 empilhado, onde não há coluna para segurar a linha. */}
-            <div className="max-w-[46ch] space-y-4 text-[1.02rem] leading-relaxed text-mint lg:max-w-none lg:border-l-2 lg:border-white/15 lg:pl-10">
+            <div className="max-w-[46ch] space-y-4 text-[1.02rem] leading-relaxed text-ink-soft lg:max-w-none lg:border-l-2 lg:border-forest/15 lg:pl-10">
               <p>
                 Ele passa horas no celular e você sabe disso. O Destrava foi feito pra caber nesse
                 mesmo lugar: linguagem fácil, atividades curtas e práticas, nada de aula gravada.
                 Ele entende na primeira tela que não é curso, e abre porque é útil, não porque foi
                 obrigado.
               </p>
-              <p className="font-semibold text-sun">
+              <p className="font-semibold text-forest">
                 E é esse o presente que você está dando: preparo na hora em que ele precisa.
               </p>
             </div>

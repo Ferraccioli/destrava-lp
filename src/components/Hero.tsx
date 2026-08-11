@@ -106,6 +106,41 @@ export default function Hero() {
   )
 }
 
+/**
+ * Campo chapado atrás da composição, no lugar de um fundo retangular.
+ *
+ * É desenho, e não imagem gerada, por três razões práticas: forma de uma cor só
+ * cabe em algumas centenas de bytes contra dezenas de KB de raster, a cor sai
+ * do token em vez de ficar cozida no arquivo, e a borda continua limpa em
+ * qualquer densidade de tela.
+ *
+ * O contorno saiu de doze raios por ângulo suavizados com Catmull-Rom
+ * convertido em cúbicas — é a curva contínua que dá a leitura de líquido; com
+ * quadráticas soltas o mesmo conjunto de pontos sai como polígono arredondado.
+ * As gotas em volta são o que faz ler como respingo e não como mancha.
+ *
+ * Fica atrás de tudo (`z-0` contra o `z-[1]` do aparelho e o `z-10` dos
+ * ícones), e `overflow-visible` porque as gotas moram fora da caixa do miolo.
+ */
+function Splash() {
+  return (
+    <svg
+      viewBox="0 0 500 500"
+      className="absolute left-1/2 top-1/2 z-0 h-auto w-[96%] -translate-x-1/2 -translate-y-1/2 text-mint"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M250 60 C277.4 62.5 301.3 98.8 327.9 115.1 C354.5 131.4 399.2 135.4 409.6 157.9 C420.1 180.3 389.2 218.5 390.6 250 C392 281.5 427.7 323.3 417.8 346.9 C408 370.5 359.7 385.5 331.7 391.5 C303.7 397.5 278.7 380.5 250 383 C221.3 385.5 181.4 416 159.7 406.3 C138.1 396.7 136.6 351.1 120 325.1 C103.4 299 61.4 275.8 60 250 C58.6 224.2 94.5 195.2 111.8 170.2 C129 145.2 140.5 118.6 163.5 100.3 C186.6 81.9 222.6 57.5 250 60 Z" />
+      <circle cx="353.3" cy="38.2" r="15" />
+      <circle cx="459.6" cy="334.7" r="21" />
+      <circle cx="225" cy="488.1" r="12" />
+      <circle cx="36.8" cy="336.1" r="17" />
+      <circle cx="40.5" cy="119.1" r="10" />
+      <circle cx="311.3" cy="36.3" r="13" />
+    </svg>
+  )
+}
+
 function HeroArt({ className = '' }: { className?: string }) {
   return (
     /*
@@ -119,6 +154,8 @@ function HeroArt({ className = '' }: { className?: string }) {
     <div
       className={`relative -mx-5 w-auto sm:mx-auto sm:w-full sm:max-w-[34rem] lg:mr-[-3.5rem] lg:max-w-none ${className}`}
     >
+      <Splash />
+
       {/* Sem `mix-blend-multiply` e sem `fade-bottom`, ao contrário da
           ilustração que saiu daqui: o recorte tem alfa de verdade, então não
           precisa do truque de blend para dissolver fundo branco, e uma máscara
@@ -126,7 +163,7 @@ function HeroArt({ className = '' }: { className?: string }) {
       <img
         src={celularSimulacao}
         alt="Um celular inclinado mostrando a Simulação do Destrava: uma entrevista de emprego em andamento, com a entrevistadora no topo e a conversa embaixo"
-        className="w-full"
+        className="relative z-[1] w-full"
         width={1024}
         height={1024}
         fetchPriority="high"

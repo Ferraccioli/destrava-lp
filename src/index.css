@@ -1,0 +1,342 @@
+/*
+ * Fredoka e Plus Jakarta Sans são as fontes da página. Lexend Deca e Nunito
+ * Sans entram por causa dos mocks do "Como funciona": as telas do app usam a
+ * tipografia do app, não a da LP, e desde que elas viraram DOM em vez de vídeo
+ * as famílias precisam existir aqui. Os cortes são os que as telas usam de
+ * fato — Lexend Deca vai até 700 por causa da nota do medidor, e Nunito Sans
+ * leva itálico por causa das citações do relatório.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Lexend+Deca:wght@300;400;500;600;700&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Fredoka', system-ui, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --color-forest: #1b5e3b;
+  --color-forest-deep: #0f3d25;
+  --color-brand: #00a870;
+  --color-brand-dark: #00875a;
+  --color-mint: #e8f5ee;
+  --color-mint-soft: #f4faf7;
+  --color-sun: #ffc93c;
+  --color-sun-soft: #fff4d6;
+  --color-ink: #24382e;
+  --color-ink-soft: #4d6156;
+  --color-ink-faint: #5f7168;
+  --color-alert: #d23b2e;
+
+  --tracking-display: -0.03em;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 34s linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@layer base {
+  h1,
+  h2 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/*
+ * Foco de teclado. Fica fora de @layer de propósito: precisa vencer as
+ * utilitárias do Tailwind, senão qualquer `outline-none` local apaga o anel.
+ * Verde sobre superfície clara, amarelo dentro de superfície escura.
+ */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 3px;
+}
+.on-dark :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline-color: var(--color-sun);
+}
+
+/*
+ * Dissolve a base da ilustração no fundo da página, para o recorte reto da
+ * arte não terminar em corte seco.
+ */
+.fade-bottom {
+  --fade-stops: #000 44%, rgba(0, 0, 0, 0.82) 64%, rgba(0, 0, 0, 0.32) 82%, transparent 95%;
+  -webkit-mask-image: linear-gradient(to bottom, var(--fade-stops));
+  mask-image: linear-gradient(to bottom, var(--fade-stops));
+}
+
+/*
+ * Composição mágica do hero: medalhas temáticas e faíscas flutuando em
+ * ritmos levemente diferentes, pra cena parecer viva sem parecer motor.
+ */
+@keyframes float-soft {
+  from {
+    transform: translateY(-6px);
+  }
+  to {
+    transform: translateY(8px);
+  }
+}
+.float-badge {
+  animation: float-soft var(--float-dur, 5s) ease-in-out var(--float-delay, 0s) infinite alternate;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) rotate(18deg);
+  }
+}
+.spark {
+  animation: twinkle var(--spark-dur, 3s) ease-in-out var(--spark-delay, 0s) infinite;
+}
+
+/*
+ * Mesma flutuação, para nós dentro de um SVG. Precisa de keyframe próprio
+ * porque ali o transform é medido em unidade do viewBox e não em pixel de
+ * tela: os 8px do `float-soft` sairiam com menos de um pixel de amplitude num
+ * desenho de 2048 de largura. Em unidade do desenho, a amplitude acompanha
+ * sozinha o tamanho em que ele for rasterizado.
+ *
+ * `fill-box` é o que faz a origem ser o centro de cada nó, e não a do desenho
+ * inteiro — sem isso, qualquer rotação ou escala aqui giraria em torno do
+ * canto do viewBox.
+ */
+@keyframes float-svg {
+  from {
+    transform: translateY(-40px);
+  }
+  to {
+    transform: translateY(55px);
+  }
+}
+.float-svg {
+  animation: float-svg var(--float-dur, 5s) ease-in-out var(--float-delay, 0s) infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-badge,
+  .float-svg,
+  .spark {
+    animation: none;
+  }
+}
+
+/*
+ * Scrollytelling do "Como funciona": em celulares de tela baixa o mockup
+ * sai de cena para o texto do passo caber inteiro na cena presa.
+ */
+@media (max-width: 767px) and (max-height: 700px) {
+  .scrolly-phone {
+    display: none;
+  }
+}
+
+/*
+ * Grifo de marca-texto, pintado da esquerda para a direita quando a citação
+ * entra em cena. O amarelo passa por trás e o texto continua escuro: pintar a
+ * letra de amarelo sobre branco reprovaria de longe no contraste. A faixa
+ * começa abaixo da metade da linha para parecer caneta e não etiqueta, e o
+ * `box-decoration-break: clone` garante que cada linha receba o próprio
+ * arremate quando o trecho grifado quebra em duas.
+ *
+ * Quem anima é o `background-size`, que cresce de 0 a 100% da largura — daí a
+ * origem à esquerda. Falha segura: sem o atributo, o texto fica sem o grifo,
+ * mas nunca ilegível, porque o amarelo é fundo e não a cor da letra.
+ */
+.grifo {
+  background-color: transparent;
+  background-image: linear-gradient(transparent 54%, var(--color-sun-soft) 54%);
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  padding-inline: 0.1em;
+  color: inherit;
+  transition: background-size 1100ms var(--ease-out-expo) 200ms;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.grifo[data-pintado='true'] {
+  background-size: 100% 100%;
+}
+
+/* Acordeão do FAQ */
+details[open] .faq-chevron {
+  transform: rotate(180deg);
+}
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+/*
+ * Momento autoral único: a régua do preço antigo é traçada quando o bloco de
+ * compra entra em cena. Parte de um estado já visível — o preço antigo nunca
+ * está escondido, só ainda não foi riscado.
+ */
+.price-strike {
+  position: relative;
+  display: inline-block;
+}
+.price-strike::after {
+  content: '';
+  position: absolute;
+  left: -0.08em;
+  right: -0.08em;
+  top: 55%;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 900ms var(--ease-out-expo) 260ms;
+}
+.price-strike[data-struck='true']::after {
+  transform: scaleX(1);
+}
+
+/*
+ * O selo de alerta é fincado: cresce o último palmo, assenta e vibra até
+ * parar. A placa ilustrada vibra com atraso e amplitude maior, girando pelo
+ * topo — é esse descompasso entre o quadro e o objeto dentro dele que dá peso
+ * ao movimento em vez de parecer efeito.
+ *
+ * Parte de um estado já visível, e essa é a decisão importante: o estado de
+ * espera não pode ser `opacity: 0`, senão o selo depende do observador para
+ * existir e some de vez se ele não entregar. Numa página de venda, o único
+ * jeito de a animação falhar é não acontecer.
+ */
+.alert-badge[data-landed='true'] {
+  animation: alert-badge-land 1150ms both;
+}
+.alert-badge[data-landed='true'] img {
+  transform-origin: 50% 12%;
+  animation: alert-plate-swing 1150ms both;
+}
+
+@keyframes alert-badge-land {
+  0% {
+    transform: scale(0.94);
+    animation-timing-function: var(--ease-out-expo);
+  }
+  38% {
+    transform: scale(1);
+  }
+  50% {
+    transform: translateX(-6px) rotate(-0.4deg);
+  }
+  62% {
+    transform: translateX(4px) rotate(0.28deg);
+  }
+  74% {
+    transform: translateX(-2.4px) rotate(-0.16deg);
+  }
+  86% {
+    transform: translateX(1px) rotate(0.07deg);
+  }
+  100% {
+    transform: translateX(0) rotate(0);
+  }
+}
+
+@keyframes alert-plate-swing {
+  0%,
+  42% {
+    transform: rotate(0deg);
+  }
+  56% {
+    transform: rotate(4.5deg);
+  }
+  68% {
+    transform: rotate(-3deg);
+  }
+  80% {
+    transform: rotate(1.6deg);
+  }
+  91% {
+    transform: rotate(-0.7deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/*
+ * Brilho do preço. A faixa branca é recortada pela própria letra
+ * (background-clip: text) e tem borda dura: as paradas do gradiente são
+ * coincidentes, sem transição, então o reflexo passa como uma lâmina e não
+ * como um borrão. O movimento acontece no primeiro quinto do ciclo; o resto
+ * é pausa com a faixa fora de cena.
+ */
+.price-shine {
+  color: var(--color-sun);
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .price-shine {
+    background-color: var(--color-sun);
+    background-image: linear-gradient(
+      100deg,
+      transparent 0 44%,
+      #fff 44% 45.2%,
+      transparent 45.2% 46.4%,
+      #fff 46.4% 47%,
+      transparent 47% 100%
+    );
+    background-repeat: no-repeat;
+    background-size: 300% 100%;
+    background-position: 0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: price-shine 5s ease-in-out infinite;
+  }
+}
+
+@keyframes price-shine {
+  0%,
+  12% {
+    background-position: 0 0;
+  }
+  34%,
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+  .price-strike::after {
+    transition: none;
+    transform: scaleX(1);
+  }
+  .price-shine {
+    animation: none;
+  }
+  .alert-badge[data-landed='true'],
+  .alert-badge[data-landed='true'] img {
+    animation: none;
+  }
+  .grifo {
+    transition: none;
+  }
+}

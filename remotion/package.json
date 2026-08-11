@@ -1,0 +1,19 @@
+{
+  "name": "destrava-lp-remotion",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Gera vídeo solto das telas do app (anúncio, social, apresentação). As telas moram na LP, em src/telas/, e a página não usa vídeo: aqui elas só recebem o quadro do Remotion em vez do relógio do navegador.",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render Simulacao out/simulacao.webm --codec=vp8 --image-format=png",
+    "render:trilhas": "remotion render Trilhas out/trilhas.webm --codec=vp8 --image-format=png",
+    "render:relatorio": "remotion render Relatorio out/relatorio.webm --codec=vp8 --image-format=png"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.398",
+    "@remotion/google-fonts": "^4.0.398",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.398"
+  }
+}

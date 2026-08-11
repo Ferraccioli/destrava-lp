@@ -1,0 +1,10 @@
+# O build da página não toca nestas duas pastas, e juntas elas são a maior
+# parte do peso do repositório.
+#
+# assets-originais/ são os PNG de origem das ilustrações (16MB). O que a página
+# serve é a versão em webp dentro de src/assets/, gerada a partir deles.
+#
+# remotion/ é o gerador de peça solta para anúncio. Ele importa as telas de
+# src/telas/, mas a página não importa nada dele.
+assets-originais
+remotion

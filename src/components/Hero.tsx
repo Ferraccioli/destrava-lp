@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import { useInView } from '../hooks/useInView'
-import portaDestrava from '../assets/porta-destrava.webp'
+import celularSimulacao from '../assets/hero-celular-3d.webp'
 import placaAlerta from '../assets/placa-alerta.webp'
 import temaEmprego from '../assets/tema-emprego.webp'
 import temaEstudo from '../assets/tema-estudo.webp'
@@ -8,9 +8,13 @@ import temaBemEstar from '../assets/tema-bem-estar.webp'
 import temaFinancas from '../assets/tema-financas.webp'
 
 /*
- * A cena conta a história do nome: a porta da vida adulta se abre atrás da
- * dupla, e os quatro temas orbitam como ícones soltos nas colunas brancas
- * dos lados, cada um flutuando num ritmo próprio.
+ * A cena mostra o produto em vez de uma metáfora dele: um aparelho em três
+ * quartos com a Simulação rodando na tela, e os quatro temas orbitando como
+ * ícones soltos nas colunas vazias dos lados, cada um num ritmo próprio.
+ *
+ * O aparelho ocupa metade da largura do quadro de 1024, e é esse vazio lateral
+ * que os ícones habitam — as posições abaixo estão em porcentagem justamente
+ * para acompanharem o desenho, e não a caixa.
  */
 const TEMAS = [
   { img: temaEmprego, nome: 'Emprego', pos: 'top-[9%] left-[5%]', size: 'h-16 md:h-24', dur: '5.2s', delay: '0s' },
@@ -115,10 +119,14 @@ function HeroArt({ className = '' }: { className?: string }) {
     <div
       className={`relative -mx-5 w-auto sm:mx-auto sm:w-full sm:max-w-[34rem] lg:mr-[-3.5rem] lg:max-w-none ${className}`}
     >
+      {/* Sem `mix-blend-multiply` e sem `fade-bottom`, ao contrário da
+          ilustração que saiu daqui: o recorte tem alfa de verdade, então não
+          precisa do truque de blend para dissolver fundo branco, e uma máscara
+          na base cortaria o aparelho no meio em vez de dissolver uma cena. */}
       <img
-        src={portaDestrava}
-        alt="Dois jovens olham um celular que brilha, com a porta da vida adulta se abrindo em luz atrás deles"
-        className="fade-bottom w-full mix-blend-multiply"
+        src={celularSimulacao}
+        alt="Um celular inclinado mostrando a Simulação do Destrava: uma entrevista de emprego em andamento, com a entrevistadora no topo e a conversa embaixo"
+        className="w-full"
         width={1024}
         height={1024}
         fetchPriority="high"

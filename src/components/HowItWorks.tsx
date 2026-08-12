@@ -14,11 +14,6 @@ type Tab = {
   id: string
   n: string
   label: string
-  /*
-   * ⚠️ Copy nova, escrita aqui e não vinda do documento fechado da campanha.
-   * O título da seção era um só ("É isso que ele passa a ter em mãos") e passou
-   * a ser um por passo. Rever com quem responde pela copy.
-   */
   titulo: string
   text: string
   tela: () => ReactNode
@@ -65,15 +60,8 @@ const TABS: Tab[] = [
   },
 ]
 
-/*
- * As quatro trilhas orbitam o aparelho e passam por trás dele, alternando os
- * lados. Ficam presas ao próprio mock, então somem junto com ele em tela baixa
- * em vez de sobrar flutuando. Decorativas: o texto do passo já nomeia as quatro.
- *
- * Valem para os três passos, não só para "As trilhas": com elas em um só, o
- * aparelho mudava de tamanho e de posição na troca de aba, e o olho lia isso
- * como a página pulando.
- */
+/* Órbitas decorativas: o texto do passo já nomeia as quatro. Valem para os
+   três passos — em um só, o aparelho mudaria de tamanho na troca de aba. */
 const TRILHAS = [
   { nome: 'Carreira', img: trilhaCarreira, pos: 'left-0 top-[4%]', tam: 'w-[27%]' },
   { nome: 'Finanças', img: trilhaFinancas, pos: 'right-0 top-[28%]', tam: 'w-[23%]' },
@@ -99,15 +87,9 @@ function TrilhasOrbitando() {
   )
 }
 
-/**
- * Seta de navegação do carrossel, presa à lateral da cena. Dá a volta nas duas
- * pontas, então nunca fica desabilitada: com três passos, o caminho mais curto
- * do terceiro para o primeiro é adiante.
- *
- * O disco tem 44px porque é o mínimo de alvo de toque; e o `aria-hidden` não
- * entra aqui, ao contrário das ilustrações decorativas — a seta é controle, e
- * quem navega por leitor de tela precisa alcançá-la.
- */
+/* Seta de navegação do carrossel. Dá a volta nas duas pontas, então nunca
+   fica desabilitada. Disco de 44px, que é o mínimo de alvo de toque; é
+   controle, e por isso não leva `aria-hidden`. */
 function Seta({ sentido, onClick }: { sentido: 'anterior' | 'proximo'; onClick: () => void }) {
   const anterior = sentido === 'anterior'
   return (
@@ -135,28 +117,12 @@ function Seta({ sentido, onClick }: { sentido: 'anterior' | 'proximo'; onClick: 
   )
 }
 
-/**
- * Largura da figura do passo, igual nos três. A figura é maior que o aparelho:
- * o mock ocupa só o miolo e as trilhas ficam nas laterais, tudo dentro dela.
- */
-/*
- * Uma medida só, em `rem`. Enquanto a seção era um scrollytelling, a largura
- * vinha de um `clamp` em `svh`: o aparelho dividia a altura da cena presa com o
- * texto, então o que o limitava era a altura da janela e não a largura, e havia
- * até uma regra na folha que o escondia em tela baixa. Sem a cena presa não há
- * altura para disputar, e a figura volta a se medir pela coluna, como o resto
- * da página.
- */
+/* Largura da figura do passo, igual nos três. A figura é maior que o
+   aparelho: o mock ocupa o miolo e as trilhas ficam nas laterais. */
 const LARGURA_DA_FIGURA = 'w-full max-w-[22rem] md:max-w-[24rem] lg:max-w-none'
 
-/**
- * O aparelho e a tela que roda dentro dele.
- *
- * A tela é DOM, não vídeo: texto é texto, então fica nítido em qualquer
- * densidade e em qualquer zoom, e o peso da página cai. O relógio só corre na
- * aba visível — as três ficam montadas para a troca ser um fade, mas as duas
- * paradas não custam quadro nenhum.
- */
+/* O aparelho e a tela que roda dentro dele. O relógio só corre na aba
+   visível; as três ficam montadas para a troca ser um fade. */
 function Aparelho({
   label,
   tela: Conteudo,
@@ -180,36 +146,25 @@ function Aparelho({
   return (
     <figure className={`relative mx-auto ${className}`}>
       <TrilhasOrbitando />
-      {/* O aparelho cede as laterais para as órbitas, e nada precisa vazar da
-          figura — que seria cortado pelo overflow da cena presa.
-
-          É container justamente para o raio dos cantos: em `rem` o aro mantinha
-          40px enquanto o aparelho encolhia de 258px para 178px, e o que era
-          15,5% da largura virava 22,5% — aparelho de brinquedo. Em `cqw` a
-          proporção é a mesma em qualquer tamanho, e 15,5% é onde o iPhone
-          real fica. */}
+      {/* O raio dos cantos é `cqw` e não `rem`: em medida fixa a proporção do aro
+         muda conforme o aparelho encolhe. 15,5% é a proporção do aparelho real. */}
       <div className="@container relative z-10 mx-auto w-[62%]">
-        {/* Botões físicos: dois de volume à esquerda, um de energia à direita */}
         <span aria-hidden="true" className="absolute -left-0.5 top-[16%] h-[6%] w-1 rounded-full bg-forest-deep" />
         <span aria-hidden="true" className="absolute -left-0.5 top-[24%] h-[9%] w-1 rounded-full bg-forest-deep" />
         <span aria-hidden="true" className="absolute -right-0.5 top-[20%] h-[11%] w-1 rounded-full bg-forest-deep" />
 
-        {/* Aro fino com sombra em duas camadas: elevação longa + contato curto.
-            O raio da tela é o do aro menos a espessura do aro, que é como
-            cantos concêntricos se comportam de verdade. */}
+        {/* O raio da tela é o do aro menos a espessura do aro, que é como cantos
+           concêntricos se comportam. */}
         <div className="relative rounded-[15.5cqw] bg-forest-deep p-1.5 shadow-[0_30px_60px_-18px_rgba(15,61,37,0.45),0_10px_20px_-10px_rgba(15,61,37,0.3)]">
           <div className="relative overflow-hidden rounded-[calc(15.5cqw-0.375rem)] bg-white">
-            {/* Ilha dinâmica, sobre a tela. `top` em porcentagem, não em rem:
-                com valor fixo ela mantém 10px enquanto a altura encolhe, então
-                num aparelho pequeno ela desce dentro do vídeo e cobre o
-                cabeçalho da tela — a barra de stories some atrás dela. */}
+            {/* Ilha dinâmica. `top` em porcentagem, não em rem: com valor fixo ela desce
+               dentro da tela conforme o aparelho encolhe e cobre o cabeçalho. */}
             <span
               aria-hidden="true"
               className="absolute left-1/2 top-[1.25%] z-10 h-[2.8%] w-[27%] -translate-x-1/2 rounded-full bg-forest-deep"
             />
-            {/* O conteúdo é decorativo para quem lê a página com leitor de
-                tela: a legenda abaixo já diz o que a tela mostra, e ler o
-                miolo seria despejar a interface inteira do app. */}
+            {/* Miolo escondido do leitor de tela: a legenda abaixo já diz o que a tela
+               mostra, e ler o conteúdo seria despejar a interface inteira do app. */}
             <div className="w-full bg-white" aria-hidden="true">
               <Tela>
                 <Palco quadro={quadro}>
@@ -227,19 +182,11 @@ function Aparelho({
 
 export default function HowItWorks() {
   const [active, setActive] = useState(0)
-  /* Com preferência por menos movimento o deslize some, e a troca de passo
-     passa a ser instantânea. A seção continua funcionando igual. */
+  /* Com preferência por menos movimento, a troca de passo é instantânea. */
   const [reduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
 
-  /*
-   * O passo é dado só por quem clica: tag, seta ou teclado. A seção já foi um
-   * scrollytelling, com um wrapper de 400svh e a cena presa num sticky, e a
-   * rolagem é que mandava no passo — o que arrastava junto uma trava de clique
-   * (a rolagem suave atravessava as faixas do meio e acendia o passo 2 no
-   * caminho do 1 para o 3) e um regime de layout separado para tela baixa.
-   * Nada disso sobrou: a seção é uma seção, e o carrossel é um carrossel.
-   */
+  /* O passo é dado só por quem clica: tag, seta ou teclado. */
   function goTo(index: number, moveFocus = false) {
     /* Dá a volta nos dois sentidos. O `+ TABS.length` antes do módulo é o que
        faz o passo -1 virar o último em vez de NaN negativo. */
@@ -257,35 +204,20 @@ export default function HowItWorks() {
 
   return (
     <section id="como-funciona" className="px-5 py-16 md:px-8 md:py-24">
-      {/* `relative` é o que dá referência às setas, que são absolutas contra a
-          cena inteira e não contra a coluna de texto. O `overflow-hidden`
-          segura o passo que entra deslizando pela borda. */}
+      {/* `relative` dá referência às setas, que são absolutas contra a cena inteira.
+         O `overflow-hidden` segura o passo que entra deslizando pela borda. */}
       <div className="relative mx-auto w-full max-w-6xl overflow-hidden">
-        {/* A altura do carrossel é declarada, e é `min-h`: em 75svh cheios o
-            conjunto cabe folgado, mas numa janela baixa e larga o aparelho tem
-            altura própria e um teto rígido o cortaria. Assim o piso vale
-            sempre e a caixa cede quando o conteúdo precisa. */}
-        {/* No mobile o conteúdo vai até a borda e as setas passam por cima:
-            reservar 44px de cada lado ali custava um terço da largura do
-            aparelho. Elas caem sobre a margem transparente da figura, que é
-            larga o bastante (19% de cada lado) para o aparelho não ser
-            encoberto. Do md em diante sobra espaço, e aí elas ficam fora. */}
+        {/* Altura em `min-h` e não `h`: numa janela baixa e larga o aparelho tem
+           altura própria, e um teto rígido o cortaria. */}
+        {/* No mobile as setas passam por cima da cena: reservar 44px de cada lado
+           custaria um terço da largura do aparelho. Elas caem sobre a margem
+           transparente da figura, larga o bastante para não encobri-lo. */}
         <div className="flex min-h-[75svh] flex-col justify-center md:px-16">
           <Seta sentido="anterior" onClick={() => goTo(active - 1)} />
           <Seta sentido="proximo" onClick={() => goTo(active + 1)} />
 
-          {/*
-            Duas colunas: tags, título e texto do passo empilhados à esquerda,
-            aparelho à direita centrado no conjunto. As tags ficam **acima** do
-            título porque o título agora é do passo, não da seção: elas nomeiam
-            qual dos três está em cena, e um rótulo que muda embaixo do que ele
-            rotula lê ao contrário.
-
-            A coluna do aparelho tem largura declarada, e não `auto`: com track
-            automática e a figura em `w-full`, a largura fica circular — a track
-            pergunta ao conteúdo, o conteúdo responde "o que couber na track" —
-            e o resultado é uma coluna de zero.
-          */}
+          {/* A coluna do aparelho tem largura declarada, e não `auto`: com track
+             automática e a figura em `w-full`, a largura fica circular e a coluna zera. */}
           <div className="grid gap-8 lg:grid-cols-[1fr_28rem] lg:items-center lg:gap-16">
             <div>
               <div
@@ -306,8 +238,8 @@ export default function HowItWorks() {
                     aria-controls={`painel-${tab.id}`}
                     tabIndex={active === i ? 0 : -1}
                     onClick={() => goTo(i)}
-                    /* No mobile a tag encolhe para devolver altura ao aparelho.
-                       py-2.5 + disco de 24 mantém o alvo de toque em 44px. */
+                    /* No mobile a tag encolhe para devolver altura ao aparelho. py-2.5 mais
+                       disco de 24 mantêm o alvo de toque em 44px. */
                     className={`flex items-center gap-2 rounded-full py-2.5 pl-2 pr-4 font-display text-sm font-medium transition-colors duration-200 md:gap-2.5 md:pl-2.5 md:pr-5 md:text-base ${
                       active === i ? 'bg-forest text-white' : 'bg-mint text-forest hover:bg-brand/20'
                     }`}
@@ -325,14 +257,9 @@ export default function HowItWorks() {
                 ))}
               </div>
 
-              {/*
-                Título e texto do passo dividem a mesma célula e deslizam.
-                O deslocamento sai de `i - active`, não de um estado de direção:
-                quem está antes do passo em cena espera à esquerda, quem está
-                depois espera à direita. Assim o sentido do deslize sai certo
-                sozinho, inclusive quando o visitante pula do 1 para o 3, e não
-                há histórico para guardar nem para dessincronizar.
-              */}
+              {/* Título e texto do passo dividem a mesma célula e deslizam. O deslocamento
+                 sai de `i - active`: quem está antes espera à esquerda, quem está depois
+                 espera à direita, então o sentido sai certo mesmo pulando do 1 para o 3. */}
               <div className="mt-7 grid md:mt-8">
                 {TABS.map((tab, i) => (
                   <div
@@ -362,28 +289,19 @@ export default function HowItWorks() {
               </div>
             </div>
 
-            {/* Coluna do aparelho: as telas se alternam junto com o texto */}
-            {/* `min-w-0` é o que segura a largura: a track de um grid tem
-                mínimo `auto`, então ela cresce até caber a figura e o
-                `max-w-full` dela passa a medir contra si mesma, sem limitar
-                nada. Com o mínimo em zero, a track obedece ao pai e a figura
-                é que se ajusta. */}
-            {/* Só a figura visível é exposta ao leitor de tela: sem isso, as
-                três legendas seriam lidas em sequência. O miolo de cada uma
-                fica escondido de qualquer jeito, dentro do próprio Aparelho. */}
+            {/* `min-w-0` é o que segura a largura: a track de um grid tem mínimo `auto`,
+               então cresceria até caber a figura e o `max-w-full` dela mediria contra si
+               mesma. */}
+            {/* Só a figura visível é exposta ao leitor de tela: sem isso, as três legendas
+               seriam lidas em sequência. */}
             <div className="grid w-full min-w-0 justify-items-center">
               {TABS.map((tab, i) => (
                 <div
                   key={tab.id}
                   hidden={reduced && active !== i}
                   aria-hidden={active !== i}
-                  /* `w-full min-w-0`: este wrapper é o item do grid, e com
-                     mínimo `auto` ele esticava até a largura pedida pela
-                     figura — que então media o próprio `max-w-full` contra
-                     ele, e nunca contra a coluna. */
-                  /* Desliza mais que o texto: o aparelho é o objeto maior da
-                     cena, e percurso igual nos dois faria o conjunto parecer
-                     uma peça só empurrada de lado. */
+                  /* `w-full min-w-0` pelo mesmo motivo da coluna: este wrapper é o item do
+                     grid. */
                   style={reduced ? undefined : { transform: `translateX(${(i - active) * 4}rem)` }}
                   className={`col-start-1 row-start-1 w-full min-w-0 ${
                     reduced

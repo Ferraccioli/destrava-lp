@@ -1,14 +1,8 @@
 import { createContext, useContext } from 'react'
 import { FPS } from './medidas'
 
-/*
- * O motor de tempo das telas do app. As telas foram escritas no Remotion e
- * agora rodam também no navegador, então elas não podem depender dele: leem o
- * quadro atual de um contexto, e quem monta decide de onde esse número vem —
- * do relógio do navegador na LP, ou do `useCurrentFrame()` na renderização de
- * vídeo. É por isso que `interpolar` e `mola` existem aqui em vez de virem do
- * pacote: são as duas únicas funções do Remotion que as telas usavam.
- */
+/* O motor de tempo das telas do app. Elas leem o quadro atual de um contexto
+   e não sabem de onde ele vem, então `interpolar` e `mola` moram aqui. */
 
 export const ContextoDoQuadro = createContext(0)
 
@@ -42,12 +36,9 @@ export function interpolar(
 
 type Config = { damping: number; stiffness: number; mass: number }
 
-/**
- * Mola de zero a um, com velocidade inicial nula. Solução analítica do
- * oscilador amortecido, nos três regimes — as configurações destas telas caem
- * quase todas em subamortecido, mas a de damping 20 passa de 1 e sem o ramo
- * certo ela devolveria oscilação onde não existe.
- */
+/* Mola de zero a um, com velocidade inicial nula. Solução analítica do
+   oscilador amortecido nos três regimes: a configuração de damping 20 passa
+   de 1, e sem o ramo certo devolveria oscilação onde não existe. */
 export function mola(quadro: number, { damping, stiffness, mass }: Config): number {
   if (quadro <= 0) return 0
   const t = quadro / FPS

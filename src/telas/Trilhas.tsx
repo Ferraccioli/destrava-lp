@@ -17,28 +17,21 @@ const ICONES: Record<string, string> = {
   quiz: iconeQuiz,
 }
 
-/*
- * As trilhas, reconstruídas em React para o mock do "Como funciona": a trilha
- * (Figma 2966:15527), a leitura (1315:1281) e o exercício (887:12714). O
- * percurso abre a trilha, entra na leitura e passa para o exercício em formato
- * de stories, com o exercício sendo respondido.
- *
- * Só ilustração é bitmap (Didi, os quatro ícones de atividade e a barra de
- * abas). Todo o resto é markup, inclusive os ícones de traço, cujos paths vêm
- * da exportação dos nós — não foram redesenhados.
- *
- * Tipografia e cor vêm do arquivo, não de estimativa: o app usa Lexend Deca em
- * título e rótulo e Plus Jakarta Sans em corpo. (O vídeo da Simulação usa só a
- * primeira; a diferença está anotada no README.)
- *
- * Duas notas de fidelidade, também no README:
- * 1. A trilha do Figma tem "Simulação" como atividade atual. Aqui a atual é
- *    "Leitura", porque é ela que abre as duas telas seguintes. A ordem mudou;
- *    rótulo, medida e descrição de cada tipo estão verbatim.
- * 2. A leitura fala de LinkedIn e o exercício fala de dinheiro: são sessões de
- *    trilhas diferentes no arquivo. Encadeadas, o exercício não testa a
- *    leitura. Nada foi reescrito — decisão de produto.
- */
+/* As trilhas (Figma 2966:15527), a leitura (1315:1281) e o exercício
+   (887:12714). O percurso abre a trilha, entra na leitura e passa para o
+   exercício em formato de stories, com o exercício sendo respondido.
+   
+   Só ilustração é bitmap (Didi, os quatro ícones de atividade e a barra de
+   abas). O resto é markup, inclusive os ícones de traço, cujos paths vêm da
+   exportação dos nós.
+   
+   Tipografia e cor vêm do arquivo: Lexend Deca em título e rótulo, Plus
+   Jakarta Sans em corpo.
+   
+   Duas diferenças em relação ao arquivo, ambas deliberadas: a atividade atual
+   aqui é "Leitura" e não "Simulação", porque é ela que abre as duas telas
+   seguintes; e a leitura fala de LinkedIn enquanto o exercício fala de
+   dinheiro, porque são sessões de trilhas diferentes no arquivo. */
 
 export const DURACAO = 496
 /** Quadro exibido quando o visitante pediu menos movimento: exercício respondido. */

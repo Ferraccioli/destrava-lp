@@ -3,27 +3,9 @@ import faperj from '../assets/apoio-faperj.webp'
 import noiz from '../assets/apoio-noiz.webp'
 import sebrae from '../assets/apoio-sebrae.webp'
 
-/*
- * Tarja de apoiadores, correndo em laço lateral.
- *
- * É uma tarja de credencial, e não uma seção: ela existe para o pai reconhecer
- * as marcas de relance e seguir. Por isso é baixa, com logos e texto pequenos.
- * Quanto menos ela pede, melhor cumpre o papel.
- *
- * Correndo, ela resolve sozinha o problema que a versão parada tinha: em linha
- * o conteúdo mede perto de oitocentos pixels, o que não cabe em tela de celular
- * e obrigava a empilhar em coluna alta. No laço, a mesma linha serve em
- * qualquer largura.
- *
- * As alturas continuam diferentes por logo de propósito: cada marca tem
- * proporção própria, e igualar altura de caixa faz a de traço fino sumir ao
- * lado da de traço grosso.
- *
- * `brightness(0) invert(1)` achata cada logo em branco puro, seja qual for a cor
- * do arquivo. É o que permite marcas de cores diferentes conviverem na mesma
- * tarja sem virar um mostruário; e é por isso que os arquivos servidos podem ser
- * pequenos, já que só a silhueta sobrevive.
- */
+/* Alturas diferentes por logo: cada marca tem proporção própria, e igualar
+   altura de caixa faz a de traço fino sumir ao lado da de traço grosso.
+   `brightness(0) invert(1)` achata qualquer cor de arquivo em branco puro. */
 const LOGOS = [
   { src: faetec, alt: 'FAETEC', altura: 'h-5', w: 232, h: 48 },
   { src: faperj, alt: 'FAPERJ', altura: 'h-6', w: 205, h: 64 },
@@ -31,7 +13,9 @@ const LOGOS = [
 ]
 
 /* Anda junto com o deslocamento do keyframe `tarja-apoio` em `index.css`, que é
-   -100% dividido por este número. Mudar um sem mudar o outro quebra a emenda. */
+   -100% dividido por este número. Mudar um sem mudar o outro quebra a emenda.
+   São seis porque o laço desliza a largura de um bloco (818px) e os que sobram
+   precisam cobrir a tela inteira enquanto ele sai. */
 const COPIAS = 6
 
 export default function Apoio() {
@@ -40,21 +24,6 @@ export default function Apoio() {
       aria-label="Apoiadores e reconhecimento"
       className="tarja-apoio-campo bg-forest-deep py-5"
     >
-      {/*
-       * O laço desliza exatamente a largura de um bloco: ao chegar lá, o bloco
-       * seguinte está onde o primeiro começou, e a volta ao zero não tem
-       * costura. Por isso todos os blocos precisam ter largura idêntica,
-       * inclusive o respiro do fim — ele está dentro do bloco, e não como
-       * espaço entre eles.
-       *
-       * Seis, e não dois, porque duas cópias não bastam: o bloco mede 818px, e
-       * enquanto ele sai de cena os que sobram precisam cobrir a tela inteira.
-       * Com dois blocos, qualquer tela acima de 818px veria o vazio chegando
-       * pela direita. Cinco blocos atrás do que sai cobrem 4092px.
-       *
-       * As cópias são decorativas e saem da árvore de acessibilidade: para quem
-       * lê por leitor de tela, a tarja tem uma lista de apoiadores, não seis.
-       */}
       <div className="tarja-apoio">
         {Array.from({ length: COPIAS }, (_, i) => (
           <Conteudo key={i} clone={i > 0} />
@@ -66,6 +35,8 @@ export default function Apoio() {
 
 function Conteudo({ clone = false }: { clone?: boolean }) {
   return (
+    /* Todos os blocos precisam ter largura idêntica, incluindo o respiro do fim
+       (`pr-8`, dentro do bloco e não entre eles), senão a emenda aparece. */
     <div
       data-clone={clone}
       aria-hidden={clone || undefined}
@@ -75,13 +46,8 @@ function Conteudo({ clone = false }: { clone?: boolean }) {
         Com o apoio:
       </p>
 
-      {/* Dimensão declarada e carregamento imediato, e os dois pelo mesmo
-          motivo: aqui a largura do bloco é a régua do laço. Com `lazy`, os
-          logos das cópias fora da tela não carregam, cada imagem mede zero, e o
-          deslocamento de -100%/6 passa a ser calculado sobre uma trilha menor
-          do que ela vai ser — a emenda quebra no instante em que as imagens
-          chegam. Medido em produção antes da correção: bloco de 536,6px contra
-          os 818,5px reais. Somados, os quatro arquivos dão 30KB. */}
+      {/* Dimensão declarada e sem `loading="lazy"`: a largura do bloco é a régua
+          do laço, e imagem que ainda não carregou mede zero. */}
       {LOGOS.map(({ src, alt, altura, w, h }) => (
         <img
           key={alt}
@@ -93,17 +59,6 @@ function Conteudo({ clone = false }: { clone?: boolean }) {
         />
       ))}
 
-      {/* Os pontos separam as duas metades da tarja: de um lado quem apoia o
-          projeto, do outro o reconhecimento do prêmio. Ponto, e não régua: a
-          régua vertical era um traço de doze pixels ao lado de logos de vinte e
-          lia como divisão de blocos.
-
-          São dois, e o segundo não é enfeite: num laço, o fim de um bloco
-          encosta no começo do seguinte, então sem ele o prêmio ficaria colado
-          no "Com o apoio:" da volta seguinte — a única emenda da tarja que
-          ficaria sem separador. O respiro do fim é `pr-8`, igual ao `gap-x-8`
-          de dentro, para o ponto ficar centrado entre as duas metades também
-          na emenda. */}
       <Ponto />
 
       <div className="flex shrink-0 items-center gap-3">
@@ -119,6 +74,8 @@ function Conteudo({ clone = false }: { clone?: boolean }) {
         />
       </div>
 
+      {/* Fecha o bloco: no laço, sem ele o prêmio encosta no "Com o apoio:" da
+          volta seguinte. */}
       <Ponto />
     </div>
   )

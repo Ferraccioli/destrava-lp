@@ -7,15 +7,8 @@ import temaEstudo from '../assets/tema-estudo.webp'
 import temaBemEstar from '../assets/tema-bem-estar.webp'
 import temaFinancas from '../assets/tema-financas.webp'
 
-/*
- * A cena mostra o produto em vez de uma metáfora dele: um aparelho em três
- * quartos com a Simulação rodando na tela, e os quatro temas orbitando como
- * ícones soltos nas colunas vazias dos lados, cada um num ritmo próprio.
- *
- * O aparelho ocupa metade da largura do quadro de 1024, e é esse vazio lateral
- * que os ícones habitam — as posições abaixo estão em porcentagem justamente
- * para acompanharem o desenho, e não a caixa.
- */
+/* Posições em porcentagem para acompanharem o desenho do aparelho, e não a
+   caixa. Cada ícone flutua no seu próprio ritmo. */
 const TEMAS = [
   { img: temaEmprego, nome: 'Emprego', pos: 'top-[9%] left-[5%]', size: 'h-16 md:h-24', dur: '5.2s', delay: '0s' },
   { img: temaEstudo, nome: 'Estudo', pos: 'top-[5%] right-[4%]', size: 'h-16 md:h-24', dur: '6.1s', delay: '0.9s' },
@@ -24,58 +17,32 @@ const TEMAS = [
 ]
 
 export default function Hero() {
-  // No desktop o selo já está em cena no carregamento; no mobile ele fica
-  // depois da ilustração, e o observador guarda o movimento para a chegada.
   const { ref: seloRef, inView: seloLanded } = useInView<HTMLDivElement>()
 
   return (
     <section className="mx-auto w-full max-w-6xl px-5 pb-14 pt-2 md:px-8 md:pb-20 md:pt-6">
       {/* Duas colunas só no lg: entre 768 e 1024 a coluna de texto fica estreita
-          demais para o display de 4.25rem e a headline sai uma palavra por linha */}
+          demais e a headline sai uma palavra por linha. */}
       <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.08fr]">
-        {/* Coluna de texto */}
         <div className="flex flex-col">
           <h1 className="font-display font-semibold text-forest">
-            {/* tracking fica no elemento que carrega o tamanho: em resolve contra a própria fonte */}
             <span className="block text-[2.75rem] leading-[0.98] tracking-display md:text-[4.25rem]">
               Seu filho sabe se virar sozinho?
             </span>
           </h1>
-          {/* A medida acompanha a coluna: headline, selo e CTA ocupam a largura
-              toda, e em 24ch o subtítulo parava em dois terços dela. */}
           <p className="mt-5 max-w-[36ch] font-display text-xl font-medium leading-snug text-balance text-ink md:text-2xl">
             Aposto que ninguém te deu um manual pra isso.{' '}
             <span className="text-brand">A gente criou um pro seu filho.</span>
           </p>
 
-          {/* Ilustração — até o lg entra aqui, entre a promessa e o selo */}
+          {/* Ilustração — até o lg entra aqui; no lg vai para a coluna direita. */}
           <HeroArt className="order-1 mt-10 lg:hidden" />
 
-          {/* Selo de diferenciação, alerta à esquerda. Já foi campo preto com o
-              título em 2rem, e era o segundo maior contraste do hero: puxava o
-              olho antes da headline e antes do CTA. Baixado a pedido para
-              amarelo pastel, texto escuro e tipo menor — deixa de ser um bloco
-              e passa a ser uma nota ao pé da promessa.
-
-              O `sun-soft` é o mesmo campo do fecho da seção de preço, então a
-              nota e a objeção falam com a mesma voz nas duas pontas da página.
-
-              A margem curta até o lg é de propósito: a base da ilustração está
-              dissolvida pelo `fade-bottom` e não precisa de respiro próprio. */}
           <div
             ref={seloRef}
             data-landed={seloLanded}
             className="alert-badge order-2 mt-2 flex items-center gap-4 rounded-xl bg-sun-soft px-5 py-4 lg:mt-8"
           >
-            {/* O arquivo veio com fundo preto chapado, feito para o campo preto
-                que havia aqui, e sobre amarelo virava um quadrado preto. O
-                fundo foi recortado no próprio asset, e não com blend:
-                `multiply` mantinha o preto, e `screen` e `lighten` lavavam o
-                desenho. O contorno verde saiu na mesma passada, a pedido.
-
-                Serve em 392px de largura para sete vezes o tamanho de render:
-                a placa tem 48px de altura aqui, então mais que isso é peso sem
-                imagem. */}
             <img
               src={placaAlerta}
               alt=""
@@ -86,9 +53,6 @@ export default function Hero() {
               loading="lazy"
             />
             <div>
-              {/* Preto a pedido. É o único preto chapado que sobrou na página,
-                  e aqui ele funciona porque o campo é claro: sobre `sun-soft`
-                  mede 19,2:1, contra 7,1:1 do forest que estava. */}
               <p className="font-display text-[1.25rem] font-semibold leading-none tracking-display text-black md:text-[1.375rem]">
                 Não é um curso.
               </p>
@@ -118,29 +82,14 @@ export default function Hero() {
           </a>
         </div>
 
-        {/* Ilustração — desktop */}
         <HeroArt className="hidden lg:block" />
       </div>
     </section>
   )
 }
 
-/**
- * Campo chapado atrás da composição, no lugar de um fundo retangular.
- *
- * É desenho, e não imagem gerada, por três razões práticas: forma de uma cor só
- * cabe em algumas centenas de bytes contra dezenas de KB de raster, a cor sai
- * do token em vez de ficar cozida no arquivo, e a borda continua limpa em
- * qualquer densidade de tela.
- *
- * O contorno saiu de doze raios por ângulo suavizados com Catmull-Rom
- * convertido em cúbicas — é a curva contínua que dá a leitura de líquido; com
- * quadráticas soltas o mesmo conjunto de pontos sai como polígono arredondado.
- * As gotas em volta são o que faz ler como respingo e não como mancha.
- *
- * Fica atrás de tudo (`z-0` contra o `z-[1]` do aparelho e o `z-10` dos
- * ícones), e `overflow-visible` porque as gotas moram fora da caixa do miolo.
- */
+/* Campo chapado atrás da composição. Fica atrás de tudo: `z-0` contra o `z-[1]`
+   do aparelho e o `z-10` dos ícones. */
 function Splash() {
   return (
     <svg
@@ -162,33 +111,19 @@ function Splash() {
 
 function HeroArt({ className = '' }: { className?: string }) {
   return (
-    /*
-     * Dois regimes, e misturar os dois quebra: no celular a cena sangra até as
-     * bordas (a coluna de texto tem respiro, a ilustração não precisa dele), e
-     * aí `w-auto` é obrigatório, porque com `w-full` a largura continua sendo a
-     * do container e a margem negativa só desloca a caixa em vez de alargá-la.
-     * Do `sm` em diante quem manda é o teto de largura, e aí a cena volta a ser
-     * centrada — sangria com teto deixaria a arte encostada num lado só.
-     */
+    /* No celular a cena sangra até as bordas, e aí `w-auto` é obrigatório: com
+       `w-full` a largura continua sendo a do container e a margem negativa só
+       desloca a caixa em vez de alargá-la. Do `sm` em diante manda o teto de
+       largura, e a cena volta a ser centrada. */
     <div
       className={`relative -mx-5 w-auto sm:mx-auto sm:w-full sm:max-w-[34rem] lg:mr-[-3.5rem] lg:max-w-none ${className}`}
     >
       <Splash />
 
-      {/* Sem `mix-blend-multiply` e sem `fade-bottom`, ao contrário da
-          ilustração que saiu daqui: o recorte tem alfa de verdade, então não
-          precisa do truque de blend para dissolver fundo branco, e uma máscara
-          na base cortaria o aparelho no meio em vez de dissolver uma cena.
-
-          O aparelho cresce por `scale`, e não por largura, e é isso que deixa o
-          resto da composição parado: `transform` não entra no layout, então a
-          caixa continua do mesmo tamanho e os ícones — posicionados em
-          porcentagem dela — e o splash ficam exatamente onde estavam.
-
-          O fator saiu de medida, não de gosto. A silhueta do aparelho ocupa de
-          27,8% a 71,1% da caixa, e o ícone mais próximo, Emprego, termina em
-          23,1%. Crescendo pelo centro, 1,14 leva a borda esquerda a 24,7% e
-          mantém folga; a partir de 1,17 o aparelho encosta no ícone. */}
+      {/* O aparelho cresce por `scale` e não por largura: `transform` não entra
+          no layout, então a caixa continua do mesmo tamanho e os ícones e o
+          splash ficam onde estão. A partir de 1,17 ele encosta no ícone da
+          esquerda. */}
       <img
         src={celularSimulacao}
         alt="Um celular inclinado mostrando a Simulação do Destrava: uma entrevista de emprego em andamento, com a entrevistadora no topo e a conversa embaixo"
@@ -198,7 +133,6 @@ function HeroArt({ className = '' }: { className?: string }) {
         fetchPriority="high"
       />
 
-      {/* Os quatro temas da vida adulta orbitando a trilha */}
       {TEMAS.map(({ img, nome, pos, size, dur, delay }) => (
         <img
           key={nome}

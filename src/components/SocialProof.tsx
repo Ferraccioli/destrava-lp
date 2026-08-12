@@ -9,7 +9,7 @@ const DEPOIMENTOS = [
     quote:
       'Ele treinou a semana toda para uma entrevista. Chegou em casa falando que se sentiu muito mais confiante do que nas outras vezes.',
     /* Grifo declarado à parte para a citação seguir sendo uma string só: a fala
-       do depoente é a fonte, e o destaque é marcação nossa por cima dela. */
+       do depoente é a fonte, e o destaque é marcação por cima dela. */
     destaque: 'se sentiu muito mais confiante',
     author: ASSINATURAS[0],
   },
@@ -25,11 +25,8 @@ const DEPOIMENTOS = [
   },
 ]
 
-/*
- * Estrela cheia de cantos arredondados, no desenho do Figma. O arredondamento
- * vem de um contorno grosso da própria cor com junção redonda, em vez de um
- * path com cada canto curvado à mão.
- */
+/* Estrela de cantos arredondados: o arredondamento vem de um contorno grosso
+   da própria cor com junção redonda, e não de curvas no path. */
 function Estrela({ className = '' }: { className?: string }) {
   return (
     <svg
@@ -115,7 +112,6 @@ export default function SocialProof() {
         />
       </div>
 
-      {/* Os outros dois, em peso menor */}
       <div className="mt-4 grid gap-y-10 md:grid-cols-2 md:gap-x-14">
         {restantes.map(({ quote, author }) => (
           <figure key={quote} className="border-t-2 border-mint pt-8">

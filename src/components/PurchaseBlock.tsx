@@ -1,16 +1,8 @@
 import { useInView } from '../hooks/useInView'
 import presenteFuturo from '../assets/presente-futuro.webp'
 
-/*
- * ⚠️ DESTINO PENDENTE. O formulário de captura saiu daqui a pedido, e no lugar
- * dele ficou um botão que leva direto ao checkout — só que checkout não existe
- * ainda, e não há URL dele em lugar nenhum do projeto. Enquanto isto for `#`, o
- * CTA principal da seção de compra não leva a lugar nenhum.
- *
- * Trocar por um link real ANTES de tratar a página como no ar. Todos os outros
- * CTAs (topo, hero, fechamento) apontam para `#comprar`, que é esta seção, e
- * terminam neste botão: é o único ponto de saída da página.
- */
+/* Destino do botão de compra. Todos os outros CTAs da página apontam para
+   `#comprar`, que é esta seção, e terminam neste botão. */
 const URL_CHECKOUT = '#'
 
 export default function PurchaseBlock() {
@@ -19,14 +11,6 @@ export default function PurchaseBlock() {
   return (
     <section id="comprar" className="scroll-mt-4 bg-mint-soft">
       <div className="mx-auto w-full max-w-6xl px-5 py-14 md:px-8 md:py-20">
-        {/* Selo de oferta sobre a régua da seção. Campo escuro com a coroa em
-            amarelo: é o único campo escuro que sobrou fora do rodapé e da tarja
-            de apoio, e por isso continua marcando o começo da oferta.
-
-            A régua vai dos dois lados agora: com ele centrado e a régua só à
-            direita, o selo ficaria pendurado numa linha que sai de lugar nenhum.
-            Duas metades iguais é o que faz a régua ler como régua cortada pelo
-            selo, e não como um traço solto. */}
         <div className="flex items-center gap-4">
           <span className="h-0.5 flex-1 bg-mint" aria-hidden="true" />
           <p className="inline-flex shrink-0 items-center gap-2 rounded-full bg-forest-deep py-2 pl-3 pr-4 font-display text-sm font-semibold text-white">
@@ -36,39 +20,18 @@ export default function PurchaseBlock() {
           <span className="h-0.5 flex-1 bg-mint" aria-hidden="true" />
         </div>
 
-        {/* Sem teto de medida: o `max-w-[16ch]` daqui era o que partia o título
-            em duas linhas. Solto, ele cabe inteiro numa linha no desktop, e no
-            celular quebra por largura de tela, como qualquer texto. */}
         <h2 className="mt-6 text-center font-display text-[2.25rem] font-semibold leading-[1.03] tracking-display text-forest md:text-[3.25rem]">
           Três meses de acesso completo.
         </h2>
 
-        {/*
-          Sem card branco. A moldura existia para juntar preço e formulário numa
-          superfície só; sem formulário ela virava uma caixa em volta de uma
-          coluna de texto, e a seção já tem fundo próprio para separá-la das
-          vizinhas. O que era conteúdo do card passa a ser conteúdo da seção.
-
-          Duas colunas: a ilustração do presente sozinha à esquerda, em tamanho
-          de ilustração e não de selo, e todo o resto à direita. A imagem é o
-          argumento da seção — "presente, não mensalidade" — então ela para de
-          ser um ícone ao lado de uma frase e passa a carregar a coluna.
-        */}
         <div className="mt-10 space-y-6">
-          {/*
-            As duas colunas são medidas pelo conteúdo (`auto`) e o conjunto é
-            centrado com `justify-center`, em vez de frações que esticam até
-            preencher o container. A diferença aparece porque o texto não chega
-            à borda: com colunas em fração, a sobra vira um buraco à direita e o
-            bloco lê como encostado à esquerda, mesmo com o container centrado.
-          */}
+          {/* Colunas medidas pelo conteúdo (`auto`) e centradas com
+              `justify-center`: em fração elas esticam até preencher o container,
+              e a sobra vira um buraco à direita. */}
           <div className="grid items-center justify-center gap-8 md:grid-cols-[auto_auto] md:gap-12 lg:gap-16">
-            {/* `mix-blend-multiply` sem `isolate` desta vez: o fundo branco do
-                asset se dissolve direto no mint da seção, e não há mais campo
-                escuro por perto para o blend pegar por engano.
-
-                Largura declarada do md em diante: com a coluna medindo o
-                conteúdo, uma imagem em `w-full` não teria contra o que medir. */}
+            {/* `mix-blend-multiply` dissolve o fundo branco do asset no mint da
+                seção. Largura declarada do md em diante: com a coluna medindo o
+                conteúdo, `w-full` não teria contra o que medir. */}
             <img
               src={presenteFuturo}
               alt=""
@@ -88,8 +51,6 @@ export default function PurchaseBlock() {
               <p className="price-shine mt-1 font-display text-[3.5rem] font-semibold leading-none tracking-display md:text-[4rem]">
                 R$ 59,90
               </p>
-              {/* "Acesso completo por 3 meses" saiu: o título da seção já diz isso.
-                  Cada condição quebra inteira, com o nowrap impedindo corte no meio. */}
               <p className="mt-4 text-sm font-medium leading-relaxed text-ink-soft">
                 <span className="whitespace-nowrap">Garantia de 7 dias&ensp;·&ensp;</span>
                 <span className="whitespace-nowrap">sem renovação automática</span>
@@ -99,8 +60,6 @@ export default function PurchaseBlock() {
                 Não é mais uma mensalidade que você assume. É um presente pensado pro futuro dele.
               </p>
 
-              {/* ⚠️ Texto novo, escrito aqui. A frase anterior cobrava o leitor
-                  pelo que ele já gastou; esta aponta para a frente. */}
               <p className="mt-4 rounded-xl bg-sun-soft px-4 py-3 text-sm font-medium leading-relaxed text-ink">
                 Invista em algo que realmente vai fazer diferença na vida dele.
               </p>
@@ -126,30 +85,13 @@ export default function PurchaseBlock() {
             </div>
           </div>
 
-          {/* Objeção. Já foi campo preto chapado com o título em 3,5rem, e era o
-              maior contraste da página inteira — o olho ia nele antes de ir no
-              preço, que é o que a seção existe para vender. Baixado a pedido:
-              campo mint, texto escuro e título no tamanho dos outros títulos de
-              apoio. A seção continua respondendo a objeção; deixa de disputar.
-
-              O amarelo do fecho saiu junto, e não por gosto: `sun` sobre mint dá
-              cerca de 1,6:1 e seria ilegível. O destaque virou peso e cor de
-              marca, que sobre este campo passa folgado.
-
-              Sem `on-dark`: aquela classe existe para virar o anel de foco para
-              amarelo sobre superfície escura, e aqui a superfície é clara.
-
-              A divisão em duas colunas só entra no lg, e não no md: a partir de
-              duas colunas o card se estreita junto com a tela, e no md a
-              resposta caía para 230px, 26 caracteres por linha. Empilhada ela
-              fica com 62. */}
+          {/* Duas colunas só no lg, e não no md: no md a resposta cai para 26
+              caracteres por linha. Empilhada, fica com 62. */}
           <div className="grid gap-6 rounded-3xl bg-mint p-6 md:p-9 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-10">
             <p className="font-display text-[1.75rem] font-semibold leading-[1.05] tracking-display text-forest md:text-[2.25rem]">
               “E se ele não usar?”
             </p>
 
-            {/* A medida se fecha pela coluna no lg+; o teto em ch só governa o
-                empilhado, onde não há coluna para segurar a linha. */}
             <div className="max-w-[46ch] space-y-4 text-[1.02rem] leading-relaxed text-ink-soft lg:max-w-none lg:border-l-2 lg:border-forest/15 lg:pl-10">
               <p>
                 Ele passa horas no celular e você sabe disso. O Destrava foi feito pra caber nesse
@@ -168,8 +110,6 @@ export default function PurchaseBlock() {
   )
 }
 
-/* Desenhada no traço dos outros ícones da página: 24 de caixa, contorno de 2,
-   pontas e junções arredondadas. */
 function Coroa() {
   return (
     <svg

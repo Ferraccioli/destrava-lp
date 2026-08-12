@@ -1,17 +1,13 @@
-/**
- * Preserva a posição de rolagem entre recarregamentos.
- *
- * O navegador já faz isso sozinho em página comum, e aqui ele não consegue: o
- * HTML servido tem só um `<div id="root">` vazio, então no instante em que ele
- * tenta restaurar, o documento tem uma tela de altura e a restauração é
- * limitada a zero. Quando o JS está em cache e o React pinta rápido, dá certo
- * por acaso, dentro da janela de retentativa do navegador; numa carga fria,
- * não. É por isso que o defeito aparece de forma intermitente.
- *
- * A saída é assumir o trabalho: `manual` desliga a tentativa do navegador — que
- * além de falhar, brigaria com a nossa —, e a posição é reposta assim que o
- * documento cresce o bastante para comportá-la.
- */
+/* Preserva a posição de rolagem entre recarregamentos.
+   
+   O navegador não consegue fazer isso sozinho aqui: o HTML servido tem só um
+   `<div id="root">` vazio, então no instante em que ele tenta restaurar, o
+   documento tem uma tela de altura e a restauração é limitada a zero. Com o JS
+   em cache dá certo por acaso; em carga fria, não — daí o defeito aparecer de
+   forma intermitente.
+   
+   `manual` desliga a tentativa do navegador, e a posição é reposta assim que o
+   documento cresce o bastante para comportá-la. */
 const CHAVE = 'destrava:rolagem'
 
 /* sessionStorage lança em modo restrito de privacidade. Perder a posição é
@@ -36,11 +32,8 @@ export function preservarRolagem() {
   if (!('scrollRestoration' in history)) return
   history.scrollRestoration = 'manual'
 
-  /*
-   * Guarda por tempo e não por quadro: `requestAnimationFrame` não corre em aba
-   * de fundo nem em navegador sem compositor, e é justamente ao sair da aba que
-   * a última posição precisa estar salva.
-   */
+  /* Guarda por tempo e não por quadro: `requestAnimationFrame` não corre em aba
+     de fundo, e é ao sair da aba que a última posição precisa estar salva. */
   let agendado: number | undefined
   addEventListener(
     'scroll',
@@ -77,11 +70,8 @@ export function preservarRolagem() {
     return
   }
 
-  /*
-   * O documento ainda não tem altura. Em vez de chutar um atraso, observa o
-   * tamanho e repõe no momento em que couber — o que acontece no primeiro
-   * quadro em que o React já montou a página.
-   */
+  /* O documento ainda não tem altura. Observa o tamanho e repõe no momento em
+     que couber, que é o primeiro quadro depois de o React montar a página. */
   const observador = new ResizeObserver(() => {
     if (!cabe()) return
     repor()

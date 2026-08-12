@@ -1,20 +1,13 @@
 import type { CSSProperties } from 'react'
 
-/**
- * Selo de garantia, vetorizado no Magnific a partir do webp e desenhado inline
- * em vez de entrar por <img>. O motivo é o pedido: as faíscas flutuam
- * **independentes** do escudo, e para animar parte de um desenho o CSS da
- * página precisa alcançar os nós — dentro de <img> o SVG é opaco para ele.
- *
- * Cada faísca tem ritmo e fase próprios, e as durações não são múltiplas entre
- * si, para o conjunto não voltar a bater no mesmo compasso. As fases são
- * negativas de propósito: assim cada uma já nasce no meio do próprio ciclo, em
- * vez de as cinco partirem juntas do mesmo ponto.
- *
- * A flutuação usa unidades do viewBox, e não pixels de tela: dentro de SVG o
- * transform é medido em unidade do desenho, então a amplitude acompanha
- * sozinha o tamanho em que o selo for desenhado.
- */
+/* Selo de garantia desenhado inline, e não por <img>: as faíscas flutuam
+   independentes do escudo, e dentro de <img> o SVG é opaco para o CSS da
+   página.
+   
+   As durações não são múltiplas entre si, para o conjunto não voltar a bater
+   no mesmo compasso, e as fases são negativas para cada faísca nascer no meio
+   do próprio ciclo. A flutuação usa unidades do viewBox, então a amplitude
+   acompanha o tamanho em que o selo for desenhado. */
 export default function SeloGarantia({ className = '' }: { className?: string }) {
   return (
     <svg

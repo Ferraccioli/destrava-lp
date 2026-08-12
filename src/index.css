@@ -1,11 +1,5 @@
-/*
- * Fredoka e Plus Jakarta Sans são as fontes da página. Lexend Deca e Nunito
- * Sans entram por causa dos mocks do "Como funciona": as telas do app usam a
- * tipografia do app, não a da LP, e desde que elas viraram DOM em vez de vídeo
- * as famílias precisam existir aqui. Os cortes são os que as telas usam de
- * fato — Lexend Deca vai até 700 por causa da nota do medidor, e Nunito Sans
- * leva itálico por causa das citações do relatório.
- */
+/* Fredoka e Plus Jakarta Sans são as fontes da página. Lexend Deca e Nunito
+   Sans são as das telas do app, que rodam dentro dos mocks. */
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Lexend+Deca:wght@300;400;500;600;700&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 @import 'tailwindcss';
 
@@ -42,11 +36,8 @@
   }
 }
 
-/*
- * Foco de teclado. Fica fora de @layer de propósito: precisa vencer as
- * utilitárias do Tailwind, senão qualquer `outline-none` local apaga o anel.
- * Verde sobre superfície clara, amarelo dentro de superfície escura.
- */
+/* Foco de teclado. Fica fora de @layer de propósito: precisa vencer as
+   utilitárias do Tailwind. */
 :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
   outline: 3px solid var(--color-brand);
   outline-offset: 3px;
@@ -55,20 +46,8 @@
   outline-color: var(--color-sun);
 }
 
-/*
- * Dissolve a base da ilustração no fundo da página, para o recorte reto da
- * arte não terminar em corte seco.
- */
-.fade-bottom {
-  --fade-stops: #000 44%, rgba(0, 0, 0, 0.82) 64%, rgba(0, 0, 0, 0.32) 82%, transparent 95%;
-  -webkit-mask-image: linear-gradient(to bottom, var(--fade-stops));
-  mask-image: linear-gradient(to bottom, var(--fade-stops));
-}
-
-/*
- * Composição mágica do hero: medalhas temáticas e faíscas flutuando em
- * ritmos levemente diferentes, pra cena parecer viva sem parecer motor.
- */
+/* Flutuação dos ícones do hero. Duração e atraso vêm por variável, para cada
+   um ter o próprio ritmo. */
 @keyframes float-soft {
   from {
     transform: translateY(-6px);
@@ -81,32 +60,9 @@
   animation: float-soft var(--float-dur, 5s) ease-in-out var(--float-delay, 0s) infinite alternate;
 }
 
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.25;
-    transform: scale(0.8) rotate(0deg);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.1) rotate(18deg);
-  }
-}
-.spark {
-  animation: twinkle var(--spark-dur, 3s) ease-in-out var(--spark-delay, 0s) infinite;
-}
-
-/*
- * Mesma flutuação, para nós dentro de um SVG. Precisa de keyframe próprio
- * porque ali o transform é medido em unidade do viewBox e não em pixel de
- * tela: os 8px do `float-soft` sairiam com menos de um pixel de amplitude num
- * desenho de 2048 de largura. Em unidade do desenho, a amplitude acompanha
- * sozinha o tamanho em que ele for rasterizado.
- *
- * `fill-box` é o que faz a origem ser o centro de cada nó, e não a do desenho
- * inteiro — sem isso, qualquer rotação ou escala aqui giraria em torno do
- * canto do viewBox.
- */
+/* Mesma flutuação para nós dentro de um SVG. Precisa de keyframe próprio
+   porque ali o transform é medido em unidades do viewBox, e não em pixels, e
+   de `transform-box: fill-box` para o nó girar em torno de si mesmo. */
 @keyframes float-svg {
   from {
     transform: translateY(-40px);
@@ -123,24 +79,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .float-badge,
-  .float-svg,
-  .spark {
+  .float-svg {
     animation: none;
   }
 }
 
-/*
- * Grifo de marca-texto, pintado da esquerda para a direita quando a citação
- * entra em cena. O amarelo passa por trás e o texto continua escuro: pintar a
- * letra de amarelo sobre branco reprovaria de longe no contraste. A faixa
- * começa abaixo da metade da linha para parecer caneta e não etiqueta, e o
- * `box-decoration-break: clone` garante que cada linha receba o próprio
- * arremate quando o trecho grifado quebra em duas.
- *
- * Quem anima é o `background-size`, que cresce de 0 a 100% da largura — daí a
- * origem à esquerda. Falha segura: sem o atributo, o texto fica sem o grifo,
- * mas nunca ilegível, porque o amarelo é fundo e não a cor da letra.
- */
+/* Grifo de marca-texto, pintado da esquerda para a direita quando a citação
+   entra em cena. */
 .grifo {
   background-color: transparent;
   background-image: linear-gradient(transparent 54%, var(--color-sun-soft) 54%);
@@ -167,11 +112,9 @@ details > summary::-webkit-details-marker {
   display: none;
 }
 
-/*
- * Momento autoral único: a régua do preço antigo é traçada quando o bloco de
- * compra entra em cena. Parte de um estado já visível — o preço antigo nunca
- * está escondido, só ainda não foi riscado.
- */
+/* Régua do preço antigo, traçada quando o bloco de compra entra em cena.
+   Parte de um estado visível: com `opacity: 0` na espera, o preço sumiria de
+   vez se o observador não disparasse. */
 .price-strike {
   position: relative;
   display: inline-block;
@@ -192,30 +135,16 @@ details > summary::-webkit-details-marker {
   transform: scaleX(1);
 }
 
-/*
- * O selo de alerta é fincado: cresce o último palmo, assenta e vibra até
- * parar. A placa ilustrada vibra com atraso e amplitude maior, girando pelo
- * topo — é esse descompasso entre o quadro e o objeto dentro dele que dá peso
- * ao movimento em vez de parecer efeito.
- *
- * Parte de um estado já visível, e essa é a decisão importante: o estado de
- * espera não pode ser `opacity: 0`, senão o selo depende do observador para
- * existir e some de vez se ele não entregar. Numa página de venda, o único
- * jeito de a animação falhar é não acontecer.
- */
+/* O selo de alerta assenta e vibra até parar; a placa vibra com atraso e
+   amplitude maiores, girando pelo topo. Parte de um estado já visível, pelo
+   mesmo motivo da régua acima. */
 .alert-badge[data-landed='true'] {
   animation: alert-badge-land 1150ms both;
 }
-/*
- * Depois de assentar, a placa volta a tremer de tempos em tempos. Duas
- * animações na mesma propriedade, e a ordem é o que faz funcionar: a última da
- * lista vence enquanto está ativa, e o tremor só fica ativo depois do próprio
- * atraso — até lá quem manda é o `both` da chegada, parada em zero. Por isso o
- * quadro 0% do tremor também é zero: sem isso haveria um salto na troca.
- *
- * O ciclo é longo e a agitação ocupa só o fim dele. É o que separa lembrete de
- * tique: sete segundos parada, um e pouco de tremor, e o olho volta.
- */
+/* Depois de assentar, a placa treme de tempos em tempos. Duas animações na
+   mesma propriedade, e a ordem é o que faz funcionar: a última da lista vence
+   enquanto está ativa, e o tremor só fica ativo depois do próprio atraso. Por
+   isso o quadro 0% do tremor também é zero, senão há salto na troca. */
 .alert-badge[data-landed='true'] img {
   transform-origin: 50% 12%;
   animation:
@@ -270,23 +199,14 @@ details > summary::-webkit-details-marker {
   }
 }
 
-/*
- * Tarja de apoiadores em laço lateral.
- *
- * O deslocamento é de **um bloco**, e a tarja tem seis: por isso -100% dividido
- * por seis. O número vive também no `COPIAS` de `Apoio.tsx`, e os dois precisam
- * andar juntos — deslocar mais ou menos que um bloco exato deixa a emenda
- * visível a cada volta.
- *
- * O passo é de quarenta pixels por segundo — o bloco mede 818px e leva vinte
- * segundos para sair —, e é lento de propósito: a tarja tem texto para ler, não
- * só logo para reconhecer. Linear, porque qualquer aceleração denuncia o ponto
- * de emenda.
- *
- * Quem pede menos movimento não recebe uma tarja parada e cortada: as cópias
- * decorativas somem, a animação para e o campo passa a rolar na horizontal,
- * para que o conteúdo continue alcançável em tela estreita.
- */
+/* Tarja de apoiadores em laço lateral. O deslocamento é de um bloco, e a
+   tarja tem seis: por isso -100% dividido por seis. O número vive também no
+   `COPIAS` de `Apoio.tsx`, e os dois precisam andar juntos.
+   
+   Linear, porque qualquer aceleração denuncia o ponto de emenda.
+   
+   Com preferência por menos movimento, as cópias somem, a animação para e o
+   campo passa a rolar na horizontal. */
 .tarja-apoio-campo {
   overflow: hidden;
 }
@@ -340,19 +260,10 @@ details > summary::-webkit-details-marker {
   }
 }
 
-/*
- * Brilho do preço. A faixa branca é recortada pela própria letra
- * (background-clip: text) e tem borda dura: as paradas do gradiente são
- * coincidentes, sem transição, então o reflexo passa como uma lâmina e não
- * como um borrão. O movimento acontece na primeira metade do ciclo; o resto
- * é pausa com a faixa fora de cena.
- *
- * Ao passar de 5s para 3s, o que encurtou foi a **pausa**, não a passada: as
- * porcentagens dos keyframes foram refeitas para a lâmina levar os mesmos
- * ~1,1s de antes. Encurtar o ciclo sem mexer nelas deixaria o reflexo mais
- * rápido, e é a velocidade da passada que faz ele ler como reflexo em metal
- * em vez de piscada.
- */
+/* Brilho do preço. A faixa branca é recortada pela própria letra
+   (`background-clip: text`) e tem borda dura: as paradas do gradiente são
+   coincidentes, então o reflexo passa como uma lâmina. O movimento acontece
+   na primeira metade do ciclo; o resto é pausa com a faixa fora de cena. */
 .price-shine {
   color: var(--color-sun);
 }

@@ -8,11 +8,6 @@ import SocialProof from './components/SocialProof'
 import ClosingFaq from './components/ClosingFaq'
 import Footer from './components/Footer'
 
-/*
- * DESTRAVA PAIS · TESTE A/B — VARIANTE A
- * Ordem das seções: Hero → Bloco de compra → Como funciona → VSL → Prova social → Fechamento + FAQ
- * A variável do teste é a posição do bloco de compra (aqui: seção 2, logo após o hero).
- */
 function App() {
   return (
     <div className="bg-white font-sans text-ink antialiased">

@@ -7,26 +7,16 @@ import { LARGURA, TOPO_SEGURO } from './medidas'
 import { JAKARTA, LEXEND, NUNITO } from './fontes'
 import { interpolar, mola, suave, useEntrada, useQuadro } from './tempo'
 
-/*
- * O Relatório da Simulação (Figma 1902:1691) para o mock do "Sem limite". A
- * tela fecha com "Refazer simulação", que é exatamente o que a aba promete —
- * refazer quantas vezes precisar até a resposta sair boa.
- *
- * Codada em React, como as outras duas. Bitmap só ilustração: medalha, estrela,
- * ícone de informação e lâmpada. Os ícones de traço têm os paths exportados dos
- * nós, não redesenhados.
- *
- * O medidor circular é desenhado com `strokeDasharray` em vez de usar o arco
- * exportado, porque o arco precisa **varrer**: é o momento principal da peça, e
- * um SVG estático não varre. Geometria conforme a descrição do componente no
- * arquivo (188 × 188, traço de 10, arco proporcional ao valor).
- *
- * Terceira família tipográfica: além de Lexend Deca (título/rótulo) e Plus
- * Jakarta Sans (corpo), esta tela usa **Nunito Sans** nos apoios cinza, nos
- * números e nas citações. Está aqui por fidelidade ao arquivo de design, e o
- * conserto, se um dia for tratada como deriva, é trocar por Plus Jakarta Sans
- * em um lugar só.
- */
+/* O Relatório da Simulação (Figma 1902:1691). Bitmap só ilustração: medalha,
+   estrela, ícone de informação e lâmpada. Os ícones de traço têm os paths
+   exportados dos nós.
+   
+   O medidor circular é desenhado com `strokeDasharray` em vez de usar o arco
+   exportado, porque o arco precisa varrer. Geometria conforme a descrição do
+   componente no arquivo (188 × 188, traço de 10, arco proporcional ao valor).
+   
+   Esta tela usa Nunito Sans nos apoios cinza, nos números e nas citações, além
+   de Lexend Deca e Plus Jakarta Sans. */
 
 export const DURACAO = 520
 /** Quadro exibido quando o visitante pediu menos movimento: relatório no fim. */
@@ -57,11 +47,8 @@ const GIRA_ATE = 96
 const ENTRA_PASSOU = 100
 const ENTRA_RESUMO = 110
 const ENTRA_MEDALHA = 122
-/*
- * As entradas caem DURANTE a rolagem que traz a seção, não depois: com elas
- * atrasadas, a rolagem chegava numa área vazia e o conteúdo pipocava com a tela
- * já parada, o que lê como carregamento e não como leitura.
- */
+/* As entradas caem durante a rolagem que traz a seção, e não depois: atrasadas,
+   a rolagem chega numa área vazia e o conteúdo pipoca com a tela já parada. */
 const ENTRA_BARRAS = [176, 186, 196]
 const ENTRA_BRILHOU = [226, 238, 250]
 const ENTRA_MELHORAR = [300, 314, 328]
@@ -425,11 +412,7 @@ const NOTAS = [
 function LinhaDeNota({ nota, entra }: { nota: (typeof NOTAS)[number]; entra: number }) {
   const quadro = useQuadro()
   const estilo = useEntrada(entra)
-  /*
-   * A largura sai da própria nota. No arquivo as três instâncias estão com o
-   * mesmo preenchimento, o que a descrição do componente pede para ajustar por
-   * instância e ninguém ajustou.
-   */
+  /* A largura sai da própria nota. */
   const preenchido = interpolar(quadro, [entra + 4, entra + 26], [0, nota.fracao],
     suave,
   )

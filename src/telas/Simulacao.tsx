@@ -5,18 +5,13 @@ import { LARGURA, TOPO_SEGURO } from './medidas'
 import { JAKARTA, LEXEND } from './fontes'
 import { interpolar, mola, suave, useEntrada, useQuadro } from './tempo'
 
-/*
- * A tela da Simulação (Figma 878:469). A conversa é codada elemento a elemento
- * — só a cena da entrevistadora no topo é imagem, exportada limpa do nó
- * 878:471, sem o X e a barra de progresso, que são desenhados aqui.
- *
- * A paleta veio medida da exportação da tela: texto #272727, apoio #a0a0a1,
- * verde do app #33cc99, botão #1e7a5b, feedback #4d62b6 sobre #f0f1f8, X do
- * desafio #f02e2e.
- *
- * Nota fiel ao Figma: a terceira fala da Helena aparece DUPLICADA no arquivo
- * (nós 878:480 e 1603:715, texto idêntico). Aqui ela entra uma vez só.
- */
+/* A tela da Simulação (Figma 878:469). A conversa é codada elemento a
+   elemento; só a cena da entrevistadora no topo é imagem, exportada do nó
+   878:471 sem o X e a barra de progresso, que são desenhados aqui.
+   
+   Paleta medida da exportação: texto #272727, apoio #a0a0a1, verde do app
+   #33cc99, botão #1e7a5b, feedback #4d62b6 sobre #f0f1f8, X do desafio
+   #f02e2e. */
 
 export const DURACAO = 430
 /** Quadro exibido quando o visitante pediu menos movimento: conversa cheia. */
@@ -35,8 +30,8 @@ const COR = {
   feedbackTexto: '#213ba4',
   vermelho: '#f02e2e',
   ambar: '#e8b25c',
-  /* Trilho das etapas. Antes elas eram brancas sobre a foto; fora dela, o par
-     que sobra é escuro no cheio e cinza claro no vazio. */
+  /* Trilho das etapas. Fora da foto, o par é escuro no cheio e cinza claro no
+     vazio. */
   trilhoEtapa: '#e4e4e4',
 }
 
@@ -79,22 +74,15 @@ const FALAS = [
 
 const ENTRA_BOTAO = 345
 
-/*
- * Marcos de rolagem [quadro, px]: calibrados por quadros renderizados, não no
- * olho. Refeitos quando a cena saiu da área que rola — antes a janela era a
- * tela inteira e a foto subia junto; agora a conversa rola dentro dos 482px que
- * sobram abaixo dela, e a mesma fala precisa de bem mais rolagem para aparecer.
- *
- * Cada valor é o que põe o elemento recém-chegado a 14px do fim da janela,
- * calculado sobre a posição medida de cada bolha. Os pares que parecem
- * repetidos (225 e 237, por exemplo) são o "segura e então rola": a fala chega
- * primeiro, a rolagem responde depois, como faz app de conversa.
- *
- * Os três degraus extras (250, 288) são do indicador de digitação, que entra
- * abaixo da última bolha e pede 49px a mais. Sem eles ele nasceria cortado.
- *
- * O último (357) é maior porque o rodapé chega no 345 e come 86px da janela.
- */
+/* Marcos de rolagem [quadro, px], calibrados por quadros renderizados. A
+   conversa rola dentro dos 482px abaixo da cena, e cada valor é o que põe o
+   elemento recém-chegado a 14px do fim da janela.
+   
+   Os pares que parecem repetidos (225 e 237, por exemplo) são o "segura e
+   então rola": a fala chega primeiro, a rolagem responde depois, como faz app
+   de conversa. Os degraus extras (250, 288) são do indicador de digitação, que
+   entra abaixo da última bolha e pede 49px a mais. O último (357) é maior
+   porque o rodapé chega no 345 e come 86px da janela. */
 const ROLAGEM: ReadonlyArray<readonly [number, number]> = [
   [0, 0],
   [104, 0],
@@ -138,22 +126,15 @@ function IconeInfo() {
   )
 }
 
-/**
- * Cabeçalho fixo: etapas do stories e a cena da entrevistadora. Só isso — o
- * título e o cargo rolam junto com a conversa.
- *
- * A cena desceu para **abaixo** das etapas em vez de ficar atrás delas: sobre a
- * foto, a barra de dez segmentos caía em cima do rosto da entrevistadora. Com a
- * faixa branca por cima, os controles não disputam mais com a ilustração, e
- * duas coisas caem por consequência — o véu escuro que existia só para dar
- * contraste aos controles brancos, e a barra de status que trocava de cor
- * conforme a cena escura saía de cena. Agora o topo é sempre branco, e a barra
- * de status é sempre escura.
- *
- * A altura da cena é a proporção exata do asset (1170 × 685) na largura do
- * aparelho. Encolher aqui não redimensiona: `cover` corta, e o que sai é a
- * cabeça dela ou a mesa.
- */
+/* Cabeçalho fixo: etapas do stories e a cena da entrevistadora. O título e o
+   cargo rolam junto com a conversa.
+   
+   A cena fica abaixo das etapas, e não atrás: sobre a foto, a barra de dez
+   segmentos cai em cima do rosto da entrevistadora.
+   
+   A altura da cena é a proporção exata do asset (1170 × 685) na largura do
+   aparelho. Encolher aqui não redimensiona: `cover` corta, e o que sai é a
+   cabeça dela ou a mesa. */
 function Cabecalho() {
   return (
     <div style={{ flexShrink: 0, backgroundColor: '#ffffff' }}>

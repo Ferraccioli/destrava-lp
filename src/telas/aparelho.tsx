@@ -3,26 +3,22 @@ import type { CSSProperties, ReactNode } from 'react'
 import { ContextoDoQuadro, interpolar, suave, useQuadro } from './tempo'
 import { ALTURA, LARGURA, TOPO_SEGURO } from './medidas'
 
-/*
- * O cromo do aparelho, que não pertence a nenhuma tela, mais os dois
- * invólucros de layout que substituem os do Remotion.
- */
+/* O cromo do aparelho, que não pertence a nenhuma tela, mais os dois
+   invólucros de layout que as telas usam. */
 
 /** Fornece o quadro atual para a árvore da tela. */
 export function Palco({ quadro, children }: { quadro: number; children: ReactNode }) {
   return <ContextoDoQuadro.Provider value={quadro}>{children}</ContextoDoQuadro.Provider>
 }
 
-/** Camada que ocupa o quadro inteiro. Equivale ao `AbsoluteFill` do Remotion. */
+/* Camada que ocupa o quadro inteiro. */
 export function Camada({ style, children }: { style?: CSSProperties; children?: ReactNode }) {
   return <div style={{ position: 'absolute', inset: 0, ...style }}>{children}</div>
 }
 
-/**
- * Barra de status: hora à esquerda, sinal, wi-fi e bateria à direita. Fica fora
- * das telas e não acompanha nem rolagem nem transição, porque é o aparelho. O
- * vão do meio é da ilha dinâmica, que o mock desenha por cima da tela.
- */
+/* Barra de status: hora à esquerda, sinal, wi-fi e bateria à direita. Fica
+   fora das telas e não acompanha rolagem nem transição, porque é o aparelho.
+   O vão do meio é da ilha dinâmica, desenhada por cima da tela. */
 export function BarraDeStatus({ cor }: { cor: string }) {
   return (
     <div
@@ -62,11 +58,7 @@ export function BarraDeStatus({ cor }: { cor: string }) {
   )
 }
 
-/**
- * Marca de toque: um ponto que aparece e um anel que expande e some, o mesmo
- * desenho que gravação de tela usa. Serve para todos os toques do roteiro, para
- * o gesto ser sempre o mesmo sinal.
- */
+/* Marca de toque: um ponto que aparece e um anel que expande e some. */
 export function Toque({
   x,
   y,
@@ -112,13 +104,11 @@ export function Toque({
   )
 }
 
-/**
- * A tela do aparelho: caixa de 390 × 800 que se ajusta à largura disponível.
- * As telas são escritas nessas medidas — as mesmas do arquivo do Figma — e a
- * página as reduz por escala, então nenhuma delas precisa saber em que tamanho
- * vai aparecer. O fator vem medido do container, porque `scale()` quer um
- * número e `calc()` com unidade de container devolve comprimento.
- */
+/* A tela do aparelho: caixa de 390 × 800 que se ajusta à largura disponível.
+   As telas são escritas nessas medidas e a página as reduz por escala, então
+   nenhuma precisa saber em que tamanho vai aparecer. O fator vem medido do
+   container, porque `scale()` quer um número e `calc()` com unidade de
+   container devolve comprimento. */
 export function Tela({ children }: { children: ReactNode }) {
   const caixa = useRef<HTMLDivElement>(null)
   const [escala, definirEscala] = useState(0)
